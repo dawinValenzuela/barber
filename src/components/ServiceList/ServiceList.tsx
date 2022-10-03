@@ -59,7 +59,7 @@ const SERVICES = [
 
 export const ServiceList = () => {
   return (
-    <Box px={4} mt={4}>
+    <Box px={4} mt={4} overflowY='auto'>
       <Heading as='h2' size='lg' noOfLines={1}>
         Listado de Servicios
       </Heading>

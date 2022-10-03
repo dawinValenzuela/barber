@@ -15,7 +15,7 @@ export const Resume = () => {
         </HStack>
         <HStack>
           <Text color='gray.400' fontWeight={600} fontSize='larger'>
-            Ganancia del 40%
+            Ganancia del 60%
           </Text>
           <Text fontSize='xl'>$40,000</Text>
         </HStack>

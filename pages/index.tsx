@@ -1,6 +1,12 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { Header, AddService, ServiceList, Resume } from 'src/components';
+import {
+  Header,
+  AddService,
+  ServiceList,
+  Resume,
+  LoginForm,
+} from 'src/components';
 
 const Home: NextPage = () => {
   return (
