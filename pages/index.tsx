@@ -18,10 +18,11 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <Header />
+        {/* <Header />
         <AddService />
         <Resume />
-        <ServiceList />
+        <ServiceList /> */}
+        <LoginForm />
       </main>
 
       <footer></footer>
