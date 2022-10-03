@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   Stack,
   Heading,
@@ -10,10 +11,14 @@ import {
   Input,
   Checkbox,
   useBreakpointValue,
-  useColorModeValue,
   FormErrorMessage,
+  useToast,
+  Spinner,
 } from '@chakra-ui/react';
+import { useAuth } from 'context/AuthContext';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
+import md5 from 'md5';
 
 interface FormData {
   email: string;
@@ -33,24 +38,45 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => console.log(data);
+  const router = useRouter();
+  const toast = useToast();
+  const { login, user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (user?.uid) {
+      router.replace('/');
+    }
+  }, [user]);
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      await login(data.email, md5(data.password));
+      router.replace('/');
+    } catch (error) {
+      toast({
+        title: 'Ah ocurrido un error',
+        description: 'Usuario y/o contraseña incorrectos',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Flex minH='100vh' align='center' justify='center'>
       <Stack spacing='8' w='md' px={5}>
         <Stack spacing='6'>
           <Stack spacing={{ base: '2', md: '3' }} textAlign='center'>
-            <Heading size={useBreakpointValue({ base: 'sm' })}>
-              Inicio de Sesion
-            </Heading>
+            <Heading size={{ base: 'sm' }}>Inicio de Sesion</Heading>
           </Stack>
         </Stack>
         <Box
           py={{ base: '8', sm: '8' }}
           px={{ base: '8', sm: '10' }}
-          bg={useBreakpointValue({
+          bg={{
             base: 'bg-surface',
-          })}
+          }}
           shadow='md'
           borderWidth='1px'
           borderRadius={{ base: 'xl' }}
