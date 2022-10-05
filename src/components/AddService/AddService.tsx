@@ -8,22 +8,17 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-export const AddService = () => {
+export const AddService = ({ services }) => {
+  console.log('services', services);
   return (
-    <Box p={4}>
+    <Box mb={4}>
       <VStack spacing={3} align='stretch'>
         <FormControl>
           <FormLabel>Servicio</FormLabel>
           <Select placeholder='Select option'>
-            <option value='option1' key={1}>
-              Option 1
-            </option>
-            <option value='option2' key={2}>
-              Option 2
-            </option>
-            <option value='option3' key={3}>
-              Option 3
-            </option>
+            {services?.map((option) => {
+              return <option key={option.key}>{option.name}</option>;
+            })}
           </Select>
         </FormControl>
         <FormControl>

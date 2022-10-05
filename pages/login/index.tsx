@@ -1,7 +1,19 @@
-import { LoginForm } from 'src/components';
+import { useEffect } from 'react';
+import { CenteredSpinner, LoginForm } from 'src/components';
+import { useAuth } from 'context/AuthContext';
+import { useRouter } from 'next/router';
 
 function Login() {
-  return <LoginForm />;
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.uid) {
+      router.replace('/');
+    }
+  }, [user, router]);
+
+  return !user && isLoading ? <CenteredSpinner /> : <LoginForm />;
 }
 
 export default Login;

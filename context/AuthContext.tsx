@@ -5,7 +5,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+
+import { auth, db } from '../firebase/config';
 
 const AuthContext = createContext<any>({});
 
@@ -17,6 +19,7 @@ export const AuthContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [loggedUser, setUser] = useState<any>(null);
+  const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,9 +52,44 @@ export const AuthContextProvider = ({
     await signOut(auth);
   };
 
+  interface Service {
+    name: string;
+    value: number;
+    userId: string;
+  }
+
+  const addBarberService = ({ name, value, userId }: Service) => {
+    return addDoc(collection(db, 'services'), {
+      name,
+      value,
+      userId,
+    });
+  };
+
+  const getBarberServices = async () => {
+    const allServices = [];
+    const querySnapshot = await getDocs(collection(db, 'services'));
+    querySnapshot.forEach((doc) => {
+      allServices.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    setServices(allServices);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user: loggedUser, login, logout, signup, isLoading }}
+      value={{
+        user: loggedUser,
+        login,
+        logout,
+        signup,
+        isLoading,
+        addBarberService,
+        getBarberServices,
+        services,
+      }}
     >
       {children}
     </AuthContext.Provider>

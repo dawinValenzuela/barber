@@ -1,27 +1,17 @@
 import React, { useEffect } from 'react';
 import { useAuth } from 'context/AuthContext';
 import { useRouter } from 'next/router';
-import { Spinner, Flex } from '@chakra-ui/react';
+import { CenteredSpinner } from '../CenteredSpiner';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user && !isLoading) {
+    if (!user) {
       router.replace('/login');
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
-  return (
-    <>
-      {user ? (
-        children
-      ) : (
-        <Flex flex={1}>
-          <Spinner />
-        </Flex>
-      )}
-    </>
-  );
+  return <>{user ? children : <CenteredSpinner />}</>;
 };

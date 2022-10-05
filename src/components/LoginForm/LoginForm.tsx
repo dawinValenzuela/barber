@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import {
   Stack,
   Heading,
@@ -10,10 +9,8 @@ import {
   FormLabel,
   Input,
   Checkbox,
-  useBreakpointValue,
   FormErrorMessage,
   useToast,
-  Spinner,
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -40,13 +37,11 @@ export const LoginForm = () => {
 
   const router = useRouter();
   const toast = useToast();
-  const { login, user, isLoading } = useAuth();
+  const { login, user } = useAuth();
 
-  useEffect(() => {
-    if (user?.uid) {
-      router.replace('/');
-    }
-  }, [user]);
+  if (user) {
+    return null;
+  }
 
   const onSubmit = async (data: FormData) => {
     try {

@@ -1,8 +1,17 @@
+import { Flex, Box, Container } from '@chakra-ui/react';
+import { useAuth } from 'context/AuthContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useEffect } from 'react';
 import { Header, AddService, ServiceList, Resume } from 'src/components';
 
 const Home: NextPage = () => {
+  const { services, getBarberServices } = useAuth();
+
+  useEffect(() => {
+    getBarberServices();
+  }, []);
+
   return (
     <>
       <Head>
@@ -11,12 +20,12 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <main>
-        <Header />
-        <AddService />
+      <Header />
+      <Container as='main' marginTop='90px'>
+        <AddService services={services} />
         <Resume />
         <ServiceList />
-      </main>
+      </Container>
 
       <footer></footer>
     </>
