@@ -13,7 +13,7 @@ function Login() {
     }
   }, [user, router]);
 
-  return !user && isLoading ? <CenteredSpinner /> : <LoginForm />;
+  return !user && <LoginForm />;
 }
 
 export default Login;

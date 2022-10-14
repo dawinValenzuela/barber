@@ -1,9 +1,24 @@
-import { Flex, Box, Container } from '@chakra-ui/react';
+import {
+  Container,
+  Box,
+  IconButton,
+  Flex,
+  Grid,
+  GridItem,
+} from '@chakra-ui/react';
+import { AddIcon, StarIcon } from '@chakra-ui/icons';
 import { useAuth } from 'context/AuthContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useEffect } from 'react';
-import { Header, AddService, ServiceList, Resume } from 'src/components';
+import {
+  Header,
+  AddService,
+  ServiceList,
+  Resume,
+  Layout,
+  Navbar,
+} from 'src/components';
 
 const Home: NextPage = () => {
   const { services, getBarberServices } = useAuth();
@@ -20,14 +35,11 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <Header />
-      <Container as='main' marginTop='90px'>
-        <AddService services={services} />
+      <Container as='section' minH='100%'>
         <Resume />
         <ServiceList />
       </Container>
-
-      <footer></footer>
+      <Navbar />
     </>
   );
 };

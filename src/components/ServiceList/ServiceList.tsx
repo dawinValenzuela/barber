@@ -52,7 +52,7 @@ const SERVICES = [
   },
   {
     name: 'Corte Basico',
-    cost: 12000,
+    cost: 15000,
     date: '12/02/2022',
   },
 ];
@@ -64,7 +64,8 @@ export const ServiceList = () => {
         Listado de Servicios
       </Heading>
       <Box rounded={'md'} w={'full'} boxShadow={'2xl'}>
-        {SERVICES.map((service, key) => (
+        {!SERVICES.length && <Text>No hay servicios</Text>}
+        {SERVICES?.map((service, key) => (
           <>
             <Box p={3} key={key}>
               <Flex justifyContent='space-between' mb={2} alignItems='center'>

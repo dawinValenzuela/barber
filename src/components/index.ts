@@ -5,3 +5,5 @@ export * from './ServiceList';
 export * from './Resume';
 export * from './CenteredSpiner';
 export * from './AddBarberService';
+export * from './Layout';
+export * from './Nabvar';

@@ -4,6 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { AuthContextProvider } from 'context/AuthContext';
 import { useRouter } from 'next/router';
 import { ProtectedRoute } from 'src/components/ProtectedRoute';
+import { Layout } from 'src/components';
 
 const noAuthRequired = ['/login'];
 
@@ -15,9 +16,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         {noAuthRequired.includes(router.pathname) ? (
           <Component {...pageProps} />
         ) : (
-          <ProtectedRoute>
-            <Component {...pageProps} />
-          </ProtectedRoute>
+          <Layout>
+            <ProtectedRoute>
+              <Component {...pageProps} />
+            </ProtectedRoute>
+          </Layout>
         )}
       </AuthContextProvider>
     </ChakraProvider>

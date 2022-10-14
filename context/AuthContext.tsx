@@ -20,9 +20,10 @@ export const AuthContextProvider = ({
 }) => {
   const [loggedUser, setUser] = useState<any>(null);
   const [services, setServices] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     const unsuscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser({
@@ -33,6 +34,7 @@ export const AuthContextProvider = ({
         setIsLoading(false);
       } else {
         setUser(null);
+        setIsLoading(false);
       }
     });
 
