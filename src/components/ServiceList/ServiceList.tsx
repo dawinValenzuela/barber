@@ -1,84 +1,40 @@
-import {
-  Box,
-  Heading,
-  Flex,
-  Text,
-  Divider,
-  Badge,
-  Tag,
-} from '@chakra-ui/react';
+import { Box, Heading, Text, Spinner, Flex } from '@chakra-ui/react';
 import React from 'react';
+import { ListItem } from '../ListItem';
+import { sortBy } from 'lodash';
 
-const SERVICES = [
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 12000,
-    date: '12/02/2022',
-  },
-  {
-    name: 'Corte Basico',
-    cost: 15000,
-    date: '12/02/2022',
-  },
-];
+export const ServiceList = ({ services = [], isLoadingServices }) => {
+  const today = new Date();
+  const dateString = today.toLocaleDateString();
 
-export const ServiceList = () => {
+  const sortedData = sortBy(services, ['hour']);
+
   return (
     <Box mt={4}>
       <Heading as='h2' size='lg' noOfLines={1} mb={4}>
         Listado de Servicios
       </Heading>
-      <Box rounded={'md'} w={'full'} boxShadow={'2xl'}>
-        {!SERVICES.length && <Text>No hay servicios</Text>}
-        {SERVICES?.map((service, key) => (
+      <Text fontSize='lg' textAlign='right' mb={4} fontWeight='bold'>
+        {dateString}
+      </Text>
+      <Box w={'full'}>
+        {isLoadingServices && (
+          <Flex width='100%' justifyContent='center'>
+            <Spinner
+              thickness='4px'
+              speed='0.65s'
+              emptyColor='gray.200'
+              color='blue.500'
+              size='xl'
+            />
+          </Flex>
+        )}
+        {!services.length && !isLoadingServices && (
+          <Text>No hay servicios</Text>
+        )}
+        {sortedData?.map((service, key) => (
           <>
-            <Box p={3} key={key}>
-              <Flex justifyContent='space-between' mb={2} alignItems='center'>
-                <Text fontWeight='medium'>{service.name}</Text>
-                <Tag colorScheme='green' size='lg'>
-                  {service.cost}
-                </Tag>
-              </Flex>
-              <Text textAlign='right' fontWeight='bold'>
-                {service.date}
-              </Text>
-            </Box>
-            <Divider />
+            <ListItem key={service.id} service={service} itemNumber={key + 1} />
           </>
         ))}
       </Box>

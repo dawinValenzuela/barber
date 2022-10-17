@@ -5,7 +5,15 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 
 import { auth, db } from '../firebase/config';
 
@@ -20,7 +28,9 @@ export const AuthContextProvider = ({
 }) => {
   const [loggedUser, setUser] = useState<any>(null);
   const [services, setServices] = useState([]);
+  const [userServices, setUserServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingServices, setIsLoadingServices] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -68,6 +78,49 @@ export const AuthContextProvider = ({
     });
   };
 
+  const addService = (data) => {
+    const today = new Date();
+
+    const newService = {
+      ...data,
+      createdAt: today,
+      date: today.toLocaleDateString(),
+      hour: today.toLocaleTimeString(),
+      isDeleted: false,
+    };
+
+    return addDoc(collection(db, 'barber-services'), {
+      ...newService,
+    });
+  };
+
+  const getUserServices = async () => {
+    setIsLoadingServices(true);
+    const allServices = [];
+    const today = new Date();
+    const dateString = today.toLocaleDateString();
+
+    const q = query(
+      collection(db, 'barber-services'),
+      where('userId', '==', loggedUser.uid),
+      where('isDeleted', '==', false),
+      where('date', '==', dateString)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+
+      const item = {
+        id: doc.id,
+        ...docData,
+      };
+
+      allServices.push(item);
+    });
+    setUserServices(allServices);
+    setIsLoadingServices(false);
+  };
+
   const getBarberServices = async () => {
     const allServices = [];
     const querySnapshot = await getDocs(collection(db, 'services'));
@@ -80,6 +133,11 @@ export const AuthContextProvider = ({
     setServices(allServices);
   };
 
+  const deleteBarberService = (id) => {
+    const docRef = doc(db, 'barber-services', id);
+    return updateDoc(docRef, { isDeleted: true });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -88,9 +146,14 @@ export const AuthContextProvider = ({
         logout,
         signup,
         isLoading,
+        isLoadingServices,
         addBarberService,
         getBarberServices,
+        addService,
         services,
+        getUserServices,
+        userServices,
+        deleteBarberService,
       }}
     >
       {children}

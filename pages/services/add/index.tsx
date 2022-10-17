@@ -1,7 +1,7 @@
-import { AddBarberService } from 'src/components';
+import { AddService as AddServiceForm } from 'src/components';
 
 function AddService() {
-  return <AddBarberService />;
+  return <AddServiceForm />;
 }
 
 export default AddService;

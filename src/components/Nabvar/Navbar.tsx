@@ -1,6 +1,7 @@
-import { Box, Flex, HStack, IconButton } from '@chakra-ui/react';
+import { Box, Flex, HStack, IconButton, Icon } from '@chakra-ui/react';
 import React from 'react';
 import { AddIcon, StarIcon } from '@chakra-ui/icons';
+import { MdContentCut, MdHome } from 'react-icons/md';
 import Link from 'next/link';
 
 export const Navbar = () => {
@@ -23,7 +24,11 @@ export const Navbar = () => {
       >
         <Box>
           <Link href='/home'>
-            <IconButton aria-label='Home' variant='ghost' icon={<StarIcon />} />
+            <IconButton
+              aria-label='Home'
+              variant='ghost'
+              icon={<Icon as={MdHome} h={6} w={6} />}
+            />
           </Link>
         </Box>
       </Flex>
@@ -35,7 +40,11 @@ export const Navbar = () => {
       >
         <Box>
           <Link href='/services/add'>
-            <IconButton aria-label='Home' variant='ghost' icon={<AddIcon />} />
+            <IconButton
+              aria-label='Service'
+              variant='ghost'
+              icon={<Icon as={MdContentCut} h={6} w={6} />}
+            />
           </Link>
         </Box>
       </Flex>
@@ -45,11 +54,15 @@ export const Navbar = () => {
         justifyContent='center'
         alignItems='center'
       >
-        <Flex height='100%' alignItems='center' px={5}>
-          <Link href='/home'>
-            <StarIcon />
+        <Box>
+          <Link href='/services/barber-service'>
+            <IconButton
+              aria-label='Barber service'
+              variant='ghost'
+              icon={<AddIcon h={6} w={6} />}
+            />
           </Link>
-        </Flex>
+        </Box>
       </Flex>
     </Flex>
   );

@@ -4,7 +4,7 @@ import { Header } from '../Header';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <Box>
+    <Box height='full'>
       <Header />
       {children}
     </Box>

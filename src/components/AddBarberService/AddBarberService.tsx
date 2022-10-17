@@ -26,7 +26,6 @@ export const AddBarberService = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset,
   } = useForm<FormData>({

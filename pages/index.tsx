@@ -21,10 +21,16 @@ import {
 } from 'src/components';
 
 const Home: NextPage = () => {
-  const { services, getBarberServices } = useAuth();
+  const {
+    getBarberServices,
+    getUserServices,
+    userServices,
+    isLoadingServices,
+  } = useAuth();
 
   useEffect(() => {
     getBarberServices();
+    getUserServices();
   }, []);
 
   return (
@@ -36,8 +42,11 @@ const Home: NextPage = () => {
       </Head>
 
       <Container as='section' minH='100%'>
-        <Resume />
-        <ServiceList />
+        <Resume services={userServices} />
+        <ServiceList
+          services={userServices}
+          isLoadingServices={isLoadingServices}
+        />
       </Container>
       <Navbar />
     </>
