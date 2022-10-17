@@ -1,14 +1,38 @@
+import {
+  Container,
+  Box,
+  IconButton,
+  Flex,
+  Grid,
+  GridItem,
+} from '@chakra-ui/react';
+import { AddIcon, StarIcon } from '@chakra-ui/icons';
+import { useAuth } from 'context/AuthContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useEffect } from 'react';
 import {
   Header,
   AddService,
   ServiceList,
   Resume,
-  LoginForm,
+  Layout,
+  Navbar,
 } from 'src/components';
 
 const Home: NextPage = () => {
+  const {
+    getBarberServices,
+    getUserServices,
+    userServices,
+    isLoadingServices,
+  } = useAuth();
+
+  useEffect(() => {
+    getBarberServices();
+    getUserServices();
+  }, []);
+
   return (
     <>
       <Head>
@@ -17,15 +41,14 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <main>
-        {/* <Header />
-        <AddService />
-        <Resume />
-        <ServiceList /> */}
-        <LoginForm />
-      </main>
-
-      <footer></footer>
+      <Container as='section' minH='100%'>
+        <Resume services={userServices} />
+        <ServiceList
+          services={userServices}
+          isLoadingServices={isLoadingServices}
+        />
+      </Container>
+      <Navbar />
     </>
   );
 };
