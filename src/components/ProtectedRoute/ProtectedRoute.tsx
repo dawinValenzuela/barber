@@ -4,14 +4,14 @@ import { useRouter } from 'next/router';
 import { CenteredSpinner } from '../CenteredSpiner';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       router.replace('/login');
     }
-  }, [user, router, isLoading]);
+  }, [user, router]);
 
-  return <>{user ? children : <CenteredSpinner />}</>;
+  return <>{user ? children : null}</>;
 };

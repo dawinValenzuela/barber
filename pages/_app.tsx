@@ -16,11 +16,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         {noAuthRequired.includes(router.pathname) ? (
           <Component {...pageProps} />
         ) : (
-          <Layout>
-            <ProtectedRoute>
+          <ProtectedRoute>
+            <Layout>
               <Component {...pageProps} />
-            </ProtectedRoute>
-          </Layout>
+            </Layout>
+          </ProtectedRoute>
         )}
       </AuthContextProvider>
     </ChakraProvider>

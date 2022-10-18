@@ -11,14 +11,7 @@ import { useAuth } from 'context/AuthContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useEffect } from 'react';
-import {
-  Header,
-  AddService,
-  ServiceList,
-  Resume,
-  Layout,
-  Navbar,
-} from 'src/components';
+import { ServiceList, Resume, Navbar } from 'src/components';
 
 const Home: NextPage = () => {
   const {

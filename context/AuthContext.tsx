@@ -29,11 +29,10 @@ export const AuthContextProvider = ({
   const [loggedUser, setUser] = useState<any>(null);
   const [services, setServices] = useState([]);
   const [userServices, setUserServices] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
     const unsuscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser({
@@ -41,11 +40,10 @@ export const AuthContextProvider = ({
           email: user.email,
           displayName: user.displayName,
         });
-        setIsLoading(false);
       } else {
         setUser(null);
-        setIsLoading(false);
       }
+      setIsLoadingAuth(false);
     });
 
     return () => unsuscribe();
@@ -145,7 +143,7 @@ export const AuthContextProvider = ({
         login,
         logout,
         signup,
-        isLoading,
+        isLoadingAuth,
         isLoadingServices,
         addBarberService,
         getBarberServices,
@@ -156,7 +154,7 @@ export const AuthContextProvider = ({
         deleteBarberService,
       }}
     >
-      {children}
+      {isLoadingAuth ? null : children}
     </AuthContext.Provider>
   );
 };

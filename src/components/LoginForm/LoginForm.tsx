@@ -37,11 +37,7 @@ export const LoginForm = () => {
 
   const router = useRouter();
   const toast = useToast();
-  const { login, user } = useAuth();
-
-  if (user) {
-    return null;
-  }
+  const { login } = useAuth();
 
   const onSubmit = async (data: FormData) => {
     try {
