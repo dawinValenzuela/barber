@@ -33,12 +33,30 @@ export const AuthContextProvider = ({
   const [isLoadingServices, setIsLoadingServices] = useState(false);
 
   useEffect(() => {
-    const unsuscribe = onAuthStateChanged(auth, (user) => {
+    const getUserData = async (email: string) => {
+      let user = null;
+      const q = query(collection(db, 'users'), where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        user = {
+          ...doc.data(),
+        };
+      });
+
+      return user;
+    };
+
+    const unsuscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const userData = await getUserData(user.email);
+
+        console.log('userData', userData);
+
         setUser({
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
+          ...userData,
         });
       } else {
         setUser(null);
@@ -49,7 +67,8 @@ export const AuthContextProvider = ({
     return () => unsuscribe();
   }, []);
 
-  const signup = (email: string, password: string) => {
+  const signup = (data) => {
+    const { email, password } = data;
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
@@ -135,6 +154,8 @@ export const AuthContextProvider = ({
     const docRef = doc(db, 'barber-services', id);
     return updateDoc(docRef, { isDeleted: true });
   };
+
+  console.log('loggedUser', loggedUser);
 
   return (
     <AuthContext.Provider

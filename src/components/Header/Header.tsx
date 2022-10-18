@@ -11,7 +11,7 @@ import {
 import { useAuth } from 'context/AuthContext';
 
 export const Header = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   return (
     <Flex
@@ -28,7 +28,7 @@ export const Header = () => {
         justifyContent='space-between'
         width='full'
       >
-        <Heading size='lg'>Dawin Valenzuela</Heading>
+        <Heading size='lg'>{user?.fullName}</Heading>
         <Menu>
           <MenuButton
             as={Button}
@@ -38,7 +38,7 @@ export const Header = () => {
             minW={0}
           >
             <Avatar
-              name='Dawin Valenzuela'
+              name={user?.fullName}
               size='md'
               bg='gray.700'
               color='white'

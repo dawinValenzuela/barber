@@ -173,7 +173,7 @@ export const AddService = () => {
           </Button>
         </Stack>
       </form>
-      <Link href='/home'>
+      <Link href='/'>
         <Text textAlign='center' fontSize='xl'>
           <ChakraLink>Regresar al listado de servicios</ChakraLink>
         </Text>

@@ -1,10 +1,16 @@
 import { Box, Flex, HStack, IconButton, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { AddIcon, StarIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 import { MdContentCut, MdHome } from 'react-icons/md';
 import Link from 'next/link';
+import { useAuth } from 'context/AuthContext';
 
 export const Navbar = () => {
+  const { user } = useAuth();
+  const { role } = user;
+
+  const isAdmin = role === 'owner' || role === 'admin';
+
   return (
     <Flex
       as='nav'
@@ -23,7 +29,7 @@ export const Navbar = () => {
         alignItems='center'
       >
         <Box>
-          <Link href='/home'>
+          <Link href='/'>
             <IconButton
               aria-label='Home'
               variant='ghost'
@@ -48,22 +54,24 @@ export const Navbar = () => {
           </Link>
         </Box>
       </Flex>
-      <Flex
-        h='100%'
-        flex='1 1 auto'
-        justifyContent='center'
-        alignItems='center'
-      >
-        <Box>
-          <Link href='/services/barber-service'>
-            <IconButton
-              aria-label='Barber service'
-              variant='ghost'
-              icon={<AddIcon h={6} w={6} />}
-            />
-          </Link>
-        </Box>
-      </Flex>
+      {isAdmin && (
+        <Flex
+          h='100%'
+          flex='1 1 auto'
+          justifyContent='center'
+          alignItems='center'
+        >
+          <Box>
+            <Link href='/services/barber-service'>
+              <IconButton
+                aria-label='Barber service'
+                variant='ghost'
+                icon={<AddIcon h={6} w={6} />}
+              />
+            </Link>
+          </Box>
+        </Flex>
+      )}
     </Flex>
   );
 };
