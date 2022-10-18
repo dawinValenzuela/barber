@@ -28,6 +28,7 @@ export const AuthContextProvider = ({
 }) => {
   const [loggedUser, setUser] = useState<any>(null);
   const [services, setServices] = useState([]);
+  const [users, setUsers] = useState([]);
   const [userServices, setUserServices] = useState([]);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
@@ -111,7 +112,7 @@ export const AuthContextProvider = ({
     });
   };
 
-  const getUserServices = async () => {
+  const getUserServices = async (userId) => {
     setIsLoadingServices(true);
     const allServices = [];
     const today = new Date();
@@ -119,7 +120,7 @@ export const AuthContextProvider = ({
 
     const q = query(
       collection(db, 'barber-services'),
-      where('userId', '==', loggedUser.uid),
+      where('userId', '==', userId || loggedUser.uid),
       where('isDeleted', '==', false),
       where('date', '==', dateString)
     );
@@ -155,7 +156,24 @@ export const AuthContextProvider = ({
     return updateDoc(docRef, { isDeleted: true });
   };
 
-  console.log('loggedUser', loggedUser);
+  const getUsers = async () => {
+    const allUsers = [];
+    const q = query(collection(db, 'users'), where('role', '==', 'barber'));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+
+      const user = {
+        id: doc.id,
+        ...docData,
+      };
+
+      allUsers.push(user);
+    });
+
+    console.log('allUsers', allUsers);
+    setUsers(allUsers);
+  };
 
   return (
     <AuthContext.Provider
@@ -173,6 +191,8 @@ export const AuthContextProvider = ({
         getUserServices,
         userServices,
         deleteBarberService,
+        getUsers,
+        users,
       }}
     >
       {isLoadingAuth ? null : children}

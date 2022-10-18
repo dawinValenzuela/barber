@@ -12,6 +12,12 @@ export interface FormData {
   name: string;
   value: number;
   userId: string;
+  createdBy: string;
   notes?: string;
   paymentMethod: string;
+}
+
+export interface User {
+  userId: string;
+  fullName: string;
 }

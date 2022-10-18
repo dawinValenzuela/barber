@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
-import { FormData, Option, Service } from './types';
+import { FormData, Option, Service, User } from './types';
 import Link from 'next/link';
 
 const DEFAULT_VALUES = {
@@ -30,17 +30,21 @@ const DEFAULT_VALUES = {
   name: '',
   value: 0,
   userId: '',
+  createdBy: '',
   paymentMethod: 'cash',
   notes: '',
 };
 
 export const AddService = () => {
-  const { services, user, addService } = useAuth();
+  const { services, user, users, addService } = useAuth();
   const toast = useToast();
+
+  const isAdmin = user.role === 'owner' || user.role === 'admin';
 
   const formDefaultValues = {
     ...DEFAULT_VALUES,
-    userId: user.uid,
+    createdBy: user.uid,
+    userId: isAdmin ? '' : user.uid,
   };
 
   const {
@@ -97,6 +101,36 @@ export const AddService = () => {
       <Heading>Agregar servicio</Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={5}>
+          {isAdmin && (
+            <FormControl isInvalid={!!errors?.userId}>
+              <FormLabel>Barbero</FormLabel>
+              <Controller
+                control={control}
+                name='userId'
+                rules={{ required: 'Debe seleccionar un barbero' }}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      placeholder='Seleccione un barbero'
+                      {...field}
+                      isDisabled={isSubmitting}
+                    >
+                      {users?.map((option: User) => {
+                        return (
+                          <option key={option.userId} value={option.userId}>
+                            {option.fullName}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                  );
+                }}
+              />
+              {errors?.userId && (
+                <FormErrorMessage>{errors?.userId?.message}</FormErrorMessage>
+              )}
+            </FormControl>
+          )}
           <FormControl isInvalid={!!errors?.serviceId}>
             <FormLabel>Servicio</FormLabel>
             <Controller

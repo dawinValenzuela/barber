@@ -19,11 +19,15 @@ const Home: NextPage = () => {
     getUserServices,
     userServices,
     isLoadingServices,
+    getUsers,
+    users,
+    user,
   } = useAuth();
 
   useEffect(() => {
     getBarberServices();
     getUserServices();
+    getUsers();
   }, []);
 
   return (
@@ -39,6 +43,9 @@ const Home: NextPage = () => {
         <ServiceList
           services={userServices}
           isLoadingServices={isLoadingServices}
+          getUserServices={getUserServices}
+          role={user.role}
+          users={users}
         />
       </Container>
       <Navbar />
