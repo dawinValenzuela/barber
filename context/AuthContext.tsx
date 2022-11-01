@@ -14,6 +14,14 @@ import {
   doc,
   updateDoc,
 } from 'firebase/firestore';
+import { AuthContextProviderProps } from './types';
+import {
+  UserInfo,
+  SignupProps,
+  ServiceProps,
+  BarberServiceProps,
+  UserData,
+} from '../types';
 
 import { auth, db } from '../firebase/config';
 
@@ -21,20 +29,16 @@ const AuthContext = createContext<any>({});
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [loggedUser, setUser] = useState<any>(null);
-  const [services, setServices] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [userServices, setUserServices] = useState([]);
+  const [services, setServices] = useState<ServiceProps[]>([]);
+  const [users, setUsers] = useState<UserInfo[]>([]);
+  const [userServices, setUserServices] = useState<ServiceProps[]>([]);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
 
   useEffect(() => {
-    const getUserData = async (email: string) => {
+    const getUserData = async (email: string | null) => {
       let user = null;
       const q = query(collection(db, 'users'), where('email', '==', email));
       const querySnapshot = await getDocs(q);
@@ -49,16 +53,17 @@ export const AuthContextProvider = ({
 
     const unsuscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userData = await getUserData(user.email);
+        const userData: UserData | null = await getUserData(user.email);
 
-        console.log('userData', userData);
+        if (userData) {
+          const userInfo = {
+            uid: user.uid,
+            displayName: user.displayName,
+            ...(userData as Object),
+          };
 
-        setUser({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          ...userData,
-        });
+          setUser(userInfo);
+        }
       } else {
         setUser(null);
       }
@@ -68,7 +73,7 @@ export const AuthContextProvider = ({
     return () => unsuscribe();
   }, []);
 
-  const signup = (data) => {
+  const signup = (data: SignupProps) => {
     const { email, password } = data;
     return createUserWithEmailAndPassword(auth, email, password);
   };
@@ -88,7 +93,7 @@ export const AuthContextProvider = ({
     userId: string;
   }
 
-  const addBarberService = ({ name, value, userId }: Service) => {
+  const addBarberService = ({ name, value, userId }: BarberServiceProps) => {
     return addDoc(collection(db, 'services'), {
       name,
       value,
@@ -96,7 +101,7 @@ export const AuthContextProvider = ({
     });
   };
 
-  const addService = (data) => {
+  const addService = (data: ServiceProps) => {
     const today = new Date();
 
     const newService = {
@@ -112,9 +117,9 @@ export const AuthContextProvider = ({
     });
   };
 
-  const getUserServices = async (userId) => {
+  const getUserServices = async (userId: string) => {
     setIsLoadingServices(true);
-    const allServices = [];
+    const allServices: ServiceProps[] = [];
     const today = new Date();
     const dateString = today.toLocaleDateString();
 
@@ -131,7 +136,7 @@ export const AuthContextProvider = ({
       const item = {
         id: doc.id,
         ...docData,
-      };
+      } as ServiceProps;
 
       allServices.push(item);
     });
@@ -140,38 +145,39 @@ export const AuthContextProvider = ({
   };
 
   const getBarberServices = async () => {
-    const allServices = [];
+    const allServices: ServiceProps[] = [];
     const querySnapshot = await getDocs(collection(db, 'services'));
     querySnapshot.forEach((doc) => {
-      allServices.push({
+      const service = {
         id: doc.id,
         ...doc.data(),
-      });
+      } as ServiceProps;
+
+      allServices.push(service);
     });
     setServices(allServices);
   };
 
-  const deleteBarberService = (id) => {
+  const deleteBarberService = (id: string) => {
     const docRef = doc(db, 'barber-services', id);
     return updateDoc(docRef, { isDeleted: true });
   };
 
   const getUsers = async () => {
-    const allUsers = [];
+    const allUsers: UserInfo[] = [];
     const q = query(collection(db, 'users'), where('role', '==', 'barber'));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       const docData = doc.data();
 
       const user = {
-        id: doc.id,
         ...docData,
-      };
+        id: doc.id,
+      } as UserInfo;
 
       allUsers.push(user);
     });
 
-    console.log('allUsers', allUsers);
     setUsers(allUsers);
   };
 
