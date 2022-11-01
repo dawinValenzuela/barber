@@ -13,7 +13,6 @@ import {
   where,
   doc,
   updateDoc,
-  DocumentData,
 } from 'firebase/firestore';
 import { AuthContextProviderProps } from './types';
 import {
