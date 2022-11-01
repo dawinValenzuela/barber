@@ -78,6 +78,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
+  const registerUser = (data: UserData) => {
+    return addDoc(collection(db, 'users'), data);
+  };
+
   const login = (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
@@ -199,6 +203,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         deleteBarberService,
         getUsers,
         users,
+        registerUser,
       }}
     >
       {isLoadingAuth ? null : children}

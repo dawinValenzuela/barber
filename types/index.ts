@@ -20,6 +20,7 @@ export interface UserData {
   fullName: string;
   role: ROLE;
   userId: string;
+  phone?: string;
 }
 
 export interface UserInfo {
