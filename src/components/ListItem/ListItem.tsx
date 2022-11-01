@@ -13,11 +13,19 @@ import {
 import { MdDeleteForever } from 'react-icons/md';
 import { useAuth } from 'context/AuthContext';
 import { Alert } from '../Alert';
+import { formatToCurrency } from 'utils/formaters';
 
 export const ListItem = ({ service, itemNumber }) => {
   const { deleteBarberService, getUserServices } = useAuth();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const toast = useToast();
+
+  const serviceName = service?.name;
+  const isFreeService = serviceName === 'corte gratis';
+
+  const percentageFromService = !isFreeService
+    ? (service?.value * 60) / 100
+    : service?.value;
 
   const handleDeleteClick = (id) => {
     deleteBarberService(id)
@@ -64,13 +72,18 @@ export const ListItem = ({ service, itemNumber }) => {
         </Flex>
         <Flex justifyContent='space-between' mb={2} alignItems='center'>
           <Text fontWeight='semibold' textTransform='capitalize'>
-            Valor: ${service.value}
+            Valor: {formatToCurrency(service.value)}
+          </Text>
+        </Flex>
+        <Flex justifyContent='space-between' mb={2} alignItems='center'>
+          <Text fontWeight='semibold' textTransform='capitalize'>
+            Porcentaje: {formatToCurrency(percentageFromService)}
           </Text>
         </Flex>
         <Flex flexDirection='column'>
           <Text>{service.notes}</Text>
           <Text fontWeight='bold' textAlign='right'>
-            {service.hour}
+            Hora del servicio: {service.hour}
           </Text>
         </Flex>
       </Box>
