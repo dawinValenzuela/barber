@@ -112,6 +112,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const newService = {
       ...data,
+      value: Number(data.value),
       createdAt: dateSelected ? dateSelected : today,
       date: dateSelected
         ? dateSelected.toLocaleDateString()

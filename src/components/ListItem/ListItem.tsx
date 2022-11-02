@@ -7,6 +7,7 @@ import {
   IconButton,
   Icon,
   useToast,
+  Divider,
 } from '@chakra-ui/react';
 import { MdDeleteForever } from 'react-icons/md';
 import { useAuth } from 'context/AuthContext';
@@ -79,12 +80,16 @@ export const ListItem = ({ service, itemNumber }) => {
           </Text>
         </Flex>
         <Flex flexDirection='column'>
-          <Text>{service.notes}</Text>
+          <Text>Notas: {service.notes}</Text>
+          <Text>
+            Pago en {service.paymentMethod === 'cash' ? 'Efectivo' : 'Nequi'}
+          </Text>
           <Text fontWeight='bold' textAlign='right'>
             Hora del servicio: {service.hour}
           </Text>
         </Flex>
       </Box>
+      <Divider my={5} orientation='horizontal' colorScheme='blue' />
       <Alert
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}

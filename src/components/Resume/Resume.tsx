@@ -4,6 +4,8 @@ import { formatToCurrency } from '../../../utils/formaters';
 export const Resume = ({ services }) => {
   const servicesCount = services?.length || 0;
 
+  console.log('services', services);
+
   //We should not sum free services
   const filterServices = services?.filter(
     (service) => service.name !== 'corte gratis'
