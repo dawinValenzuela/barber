@@ -108,14 +108,21 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const addService = (data: ServiceProps) => {
     const today = new Date();
+    const dateSelected = data?.createdAt && new Date(data.createdAt);
 
     const newService = {
       ...data,
-      createdAt: today,
-      date: today.toLocaleDateString(),
-      hour: today.toLocaleTimeString(),
+      createdAt: dateSelected ? dateSelected : today,
+      date: dateSelected
+        ? dateSelected.toLocaleDateString()
+        : today.toLocaleDateString(),
+      hour: dateSelected
+        ? dateSelected.toLocaleTimeString()
+        : today.toLocaleTimeString(),
       isDeleted: false,
     };
+
+    console.log('newService', newService);
 
     return addDoc(collection(db, 'barber-services'), {
       ...newService,

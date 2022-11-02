@@ -19,6 +19,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Text,
+  Input,
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
@@ -31,6 +32,7 @@ const DEFAULT_VALUES = {
   value: 0,
   userId: '',
   createdBy: '',
+  createdAt: '',
   paymentMethod: 'cash',
   notes: '',
 };
@@ -102,34 +104,40 @@ export const AddService = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={5}>
           {isAdmin && (
-            <FormControl isInvalid={!!errors?.userId}>
-              <FormLabel>Barbero</FormLabel>
-              <Controller
-                control={control}
-                name='userId'
-                rules={{ required: 'Debe seleccionar un barbero' }}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      placeholder='Seleccione un barbero'
-                      {...field}
-                      isDisabled={isSubmitting}
-                    >
-                      {users?.map((option: User) => {
-                        return (
-                          <option key={option.userId} value={option.userId}>
-                            {option.fullName}
-                          </option>
-                        );
-                      })}
-                    </Select>
-                  );
-                }}
-              />
-              {errors?.userId && (
-                <FormErrorMessage>{errors?.userId?.message}</FormErrorMessage>
-              )}
-            </FormControl>
+            <>
+              <FormControl isInvalid={!!errors?.userId}>
+                <FormLabel>Barbero</FormLabel>
+                <Controller
+                  control={control}
+                  name='userId'
+                  rules={{ required: 'Debe seleccionar un barbero' }}
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        placeholder='Seleccione un barbero'
+                        {...field}
+                        isDisabled={isSubmitting}
+                      >
+                        {users?.map((option: User) => {
+                          return (
+                            <option key={option.userId} value={option.userId}>
+                              {option.fullName}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    );
+                  }}
+                />
+                {errors?.userId && (
+                  <FormErrorMessage>{errors?.userId?.message}</FormErrorMessage>
+                )}
+              </FormControl>
+              <FormControl>
+                <FormLabel>Fecha del servicio</FormLabel>
+                <Input type='datetime-local' {...register('createdAt')} />
+              </FormControl>
+            </>
           )}
           <FormControl isInvalid={!!errors?.serviceId}>
             <FormLabel>Servicio</FormLabel>
