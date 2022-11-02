@@ -214,6 +214,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       collection(db, 'barber-services'),
       where('createdAt', '>=', firstDay),
       where('createdAt', '<=', lastDay),
+      where('isDeleted', '==', false),
       where('userId', '==', loggedUser.uid)
     );
 
