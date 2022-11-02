@@ -31,6 +31,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [loggedUser, setUser] = useState<any>(null);
+  const [resumeServices, setResumeServices] = useState<ServiceProps[]>([]);
   const [services, setServices] = useState<ServiceProps[]>([]);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
@@ -121,11 +122,18 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
   };
 
-  const getUserServices = async (userId: string) => {
+  const getUserServices = async (userId: string, date: string) => {
     setIsLoadingServices(true);
     const allServices: ServiceProps[] = [];
-    const today = new Date();
-    const dateString = today.toLocaleDateString();
+
+    let dateString = '';
+
+    if (date) {
+      dateString = date;
+    } else {
+      const today = new Date();
+      dateString = today.toLocaleDateString();
+    }
 
     const q = query(
       collection(db, 'barber-services'),
@@ -185,6 +193,39 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setUsers(allUsers);
   };
 
+  const getResumeUserInfo = async () => {
+    const allServices: ServiceProps[] = [];
+    const now = new Date();
+
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    // console.log(firstDay);
+
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // console.log(lastDay);
+
+    const q = query(
+      collection(db, 'barber-services'),
+      where('createdAt', '>=', firstDay),
+      where('createdAt', '<=', lastDay),
+      where('userId', '==', loggedUser.uid)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+
+      const service = {
+        ...docData,
+        id: doc.id,
+      } as ServiceProps;
+
+      allServices.push(service);
+    });
+
+    setResumeServices(allServices);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -204,6 +245,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         getUsers,
         users,
         registerUser,
+        getResumeUserInfo,
+        resumeServices,
       }}
     >
       {isLoadingAuth ? null : children}

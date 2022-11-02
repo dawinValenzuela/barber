@@ -45,6 +45,7 @@ const Home: NextPage = () => {
           isLoadingServices={isLoadingServices}
           getUserServices={getUserServices}
           role={user.role}
+          user={user}
           users={users}
         />
       </Container>
