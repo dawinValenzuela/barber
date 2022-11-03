@@ -47,12 +47,17 @@ export const Header = () => {
               color='white'
             />
           </MenuButton>
-          <MenuList>
+          <MenuList zIndex={10}>
             <MenuItem onClick={logout}>Cerrar sesion</MenuItem>
             {user.role === 'owner' && (
-              <MenuItem>
-                <Link href='/users/add'>Crear usuario</Link>
-              </MenuItem>
+              <Link href='/users/add'>
+                <MenuItem>Crear usuario</MenuItem>
+              </Link>
+            )}
+            {user.role === 'owner' && (
+              <Link href='/report'>
+                <MenuItem>Reporte</MenuItem>
+              </Link>
             )}
           </MenuList>
         </Menu>

@@ -4,8 +4,6 @@ import { formatToCurrency } from '../../../utils/formaters';
 export const Resume = ({ services }) => {
   const servicesCount = services?.length || 0;
 
-  console.log('services', services);
-
   //We should not sum free services
   const filterServices = services?.filter(
     (service) => service.name !== 'corte gratis'
@@ -27,6 +25,7 @@ export const Resume = ({ services }) => {
   );
 
   const percentage = Math.round(totalValue * 0.6);
+  const amountUtility = Math.round(totalValue * 0.4);
 
   return (
     <Box my={6}>
@@ -42,7 +41,7 @@ export const Resume = ({ services }) => {
         </HStack>
         <HStack>
           <Text color='gray.400' fontWeight={600} fontSize='larger'>
-            Total Pagado en servicios:
+            Total Pagado:
           </Text>
           <Text fontSize='xl'>{formatToCurrency(totalValue)}</Text>
         </HStack>
@@ -51,6 +50,12 @@ export const Resume = ({ services }) => {
             Ganado 60%:
           </Text>
           <Text fontSize='xl'>{formatToCurrency(percentage)}</Text>
+        </HStack>
+        <HStack>
+          <Text color='gray.400' fontWeight={600} fontSize='larger'>
+            Ganado 40%:
+          </Text>
+          <Text fontSize='xl'>{formatToCurrency(amountUtility)}</Text>
         </HStack>
         <HStack>
           <Text color='gray.400' fontWeight={600} fontSize='larger'>

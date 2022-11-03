@@ -1,12 +1,4 @@
-import {
-  Container,
-  Box,
-  IconButton,
-  Flex,
-  Grid,
-  GridItem,
-} from '@chakra-ui/react';
-import { AddIcon, StarIcon } from '@chakra-ui/icons';
+import { Container } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';

@@ -9,9 +9,9 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
-import React, { useEffect, useState } from 'react';
-import { ListItem } from '../ListItem';
+import React, { useState } from 'react';
 import { sortBy } from 'lodash';
+import { UserFilter, ListItem } from 'src/components';
 
 export const ServiceList = ({
   services = [],
@@ -72,21 +72,7 @@ export const ServiceList = ({
         />
       </Flex>
 
-      {isAdmin && (
-        <Select
-          placeholder='Seleccione un barbero'
-          mb={5}
-          onChange={handleOnSelectChange}
-        >
-          {users?.map((option) => {
-            return (
-              <option key={option.userId} value={option.userId}>
-                {option.fullName}
-              </option>
-            );
-          })}
-        </Select>
-      )}
+      {isAdmin && <UserFilter users={users} onChange={handleOnSelectChange} />}
 
       <Box w={'full'}>
         {isLoadingServices && (

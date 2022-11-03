@@ -32,6 +32,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [loggedUser, setUser] = useState<any>(null);
   const [resumeServices, setResumeServices] = useState<ServiceProps[]>([]);
+  const [reportServices, setReportServices] = useState<ServiceProps[]>([]);
   const [services, setServices] = useState<ServiceProps[]>([]);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
@@ -201,7 +202,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setUsers(allUsers);
   };
 
-  const getResumeUserInfo = async () => {
+  const getResumeUserInfo = async (userId: string) => {
     const allServices: ServiceProps[] = [];
     const now = new Date();
 
@@ -216,7 +217,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       where('createdAt', '>=', firstDay),
       where('createdAt', '<=', lastDay),
       where('isDeleted', '==', false),
-      where('userId', '==', loggedUser.uid)
+      where('userId', '==', userId || loggedUser.uid)
     );
 
     const querySnapshot = await getDocs(q);
@@ -233,6 +234,40 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
 
     setResumeServices(allServices);
+  };
+
+  const getAllServices = async () => {
+    const allServices: ServiceProps[] = [];
+
+    const now = new Date();
+
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    // console.log(firstDay);
+
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // console.log(lastDay);
+
+    const q = query(
+      collection(db, 'barber-services'),
+      where('createdAt', '>=', firstDay),
+      where('createdAt', '<=', lastDay),
+      where('isDeleted', '==', false)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+
+      const service = {
+        ...docData,
+        id: doc.id,
+      } as ServiceProps;
+
+      allServices.push(service);
+    });
+
+    setReportServices(allServices);
   };
 
   return (
@@ -256,6 +291,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         registerUser,
         getResumeUserInfo,
         resumeServices,
+        reportServices,
+        getAllServices,
       }}
     >
       {isLoadingAuth ? null : children}
