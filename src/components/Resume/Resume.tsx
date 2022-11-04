@@ -53,7 +53,7 @@ export const Resume = ({ services }) => {
         </HStack>
         <HStack>
           <Text color='gray.400' fontWeight={600} fontSize='larger'>
-            Ganado 40%:
+            Barberia 40%:
           </Text>
           <Text fontSize='xl'>{formatToCurrency(amountUtility)}</Text>
         </HStack>
