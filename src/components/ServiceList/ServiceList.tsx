@@ -1,17 +1,29 @@
-import { Box, Heading, Text, Spinner, Flex, Select } from '@chakra-ui/react';
-import React from 'react';
-import { ListItem } from '../ListItem';
+import {
+  Box,
+  Heading,
+  Text,
+  Spinner,
+  Flex,
+  Select,
+  Icon,
+  IconButton,
+} from '@chakra-ui/react';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
+import React, { useState } from 'react';
 import { sortBy } from 'lodash';
+import { UserFilter, ListItem } from 'src/components';
 
 export const ServiceList = ({
   services = [],
   isLoadingServices = false,
   role,
+  user,
   users = [],
   getUserServices,
 }) => {
-  const today = new Date();
-  const dateString = today.toLocaleDateString();
+  const [userSelected, setUserSelected] = useState<string>(user?.userId); // just for admin
+  const [today] = useState(new Date());
+  const [dateString, setDateString] = useState(today.toLocaleDateString());
 
   const sortedData = sortBy(services, ['hour']);
 
@@ -19,7 +31,22 @@ export const ServiceList = ({
 
   const handleOnSelectChange = (event) => {
     const userId = event?.target?.value;
+    setUserSelected(userId);
     getUserServices(userId);
+  };
+
+  const handleLeftClick = () => {
+    today.setDate(today.getDate() - 1);
+    const newDate = today.toLocaleDateString();
+    setDateString(newDate);
+    getUserServices(userSelected, newDate);
+  };
+
+  const handleRightClick = () => {
+    today.setDate(today.getDate() + 1);
+    const newDate = today.toLocaleDateString();
+    setDateString(newDate);
+    getUserServices(userSelected, newDate);
   };
 
   return (
@@ -27,25 +54,25 @@ export const ServiceList = ({
       <Heading as='h2' size='lg' noOfLines={1} mb={4} textAlign='center'>
         Listado de Servicios
       </Heading>
-      <Text fontSize='lg' textAlign='center' mb={4} fontWeight='bold'>
-        {dateString}
-      </Text>
+      <Flex justifyContent='space-between' mb={5}>
+        <IconButton
+          colorScheme='blue'
+          aria-label='left'
+          icon={<Icon as={MdKeyboardArrowLeft} w={8} h={8} />}
+          onClick={handleLeftClick}
+        />
+        <Text fontSize='lg' textAlign='center' mb={4} fontWeight='bold'>
+          {dateString}
+        </Text>
+        <IconButton
+          colorScheme='blue'
+          aria-label='right'
+          icon={<Icon as={MdKeyboardArrowRight} w={8} h={8} />}
+          onClick={handleRightClick}
+        />
+      </Flex>
 
-      {isAdmin && (
-        <Select
-          placeholder='Seleccione un barbero'
-          mb={5}
-          onChange={handleOnSelectChange}
-        >
-          {users?.map((option) => {
-            return (
-              <option key={option.userId} value={option.userId}>
-                {option.fullName}
-              </option>
-            );
-          })}
-        </Select>
-      )}
+      {isAdmin && <UserFilter users={users} onChange={handleOnSelectChange} />}
 
       <Box w={'full'}>
         {isLoadingServices && (
@@ -62,11 +89,12 @@ export const ServiceList = ({
         {!services.length && !isLoadingServices && (
           <Text>No hay servicios</Text>
         )}
-        {sortedData?.map((service, key) => (
-          <>
-            <ListItem key={service.id} service={service} itemNumber={key + 1} />
-          </>
-        ))}
+        {!isLoadingServices &&
+          sortedData?.map((service, key) => (
+            <>
+              <ListItem key={key} service={service} itemNumber={key + 1} />
+            </>
+          ))}
       </Box>
     </Box>
   );

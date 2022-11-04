@@ -15,6 +15,7 @@ export interface FormData {
   createdBy: string;
   notes?: string;
   paymentMethod: string;
+  createdAt?: string;
 }
 
 export interface User {

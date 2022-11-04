@@ -8,9 +8,12 @@ import {
   Button,
   FormErrorMessage,
   useToast,
+  Text,
+  Link as ChakraLink,
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import { useForm } from 'react-hook-form';
+import Link from 'next/link';
 
 interface FormData {
   name: string;
@@ -95,6 +98,11 @@ export const AddBarberService = () => {
           </Button>
         </Stack>
       </form>
+      <Link href='/'>
+        <Text textAlign='center' fontSize='xl'>
+          <ChakraLink>Regresar al listado de servicios</ChakraLink>
+        </Text>
+      </Link>
     </VStack>
   );
 };

@@ -9,9 +9,12 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
+import Link from 'next/link';
 
 export const Header = () => {
   const { logout, user } = useAuth();
+
+  console.log('user', user);
 
   return (
     <Flex
@@ -44,8 +47,18 @@ export const Header = () => {
               color='white'
             />
           </MenuButton>
-          <MenuList>
+          <MenuList zIndex={10}>
             <MenuItem onClick={logout}>Cerrar sesion</MenuItem>
+            {user.role === 'owner' && (
+              <Link href='/users/add'>
+                <MenuItem>Crear usuario</MenuItem>
+              </Link>
+            )}
+            {user.role === 'owner' && (
+              <Link href='/report'>
+                <MenuItem>Reporte</MenuItem>
+              </Link>
+            )}
           </MenuList>
         </Menu>
       </Flex>

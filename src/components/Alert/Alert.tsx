@@ -9,8 +9,14 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-export const Alert = ({ isOpen, onClose, onDelete }) => {
-  const cancelRef = React.useRef();
+type AlertProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onDelete: () => void;
+};
+
+export const Alert = ({ isOpen, onClose, onDelete }: AlertProps) => {
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
   return (
     <AlertDialog
       isOpen={isOpen}

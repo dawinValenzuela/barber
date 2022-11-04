@@ -10,3 +10,7 @@ export * from './Nabvar';
 export * from './ListItem';
 export * from './Alert';
 export * from './Register';
+export * from './AddUser';
+export * from './ResumeInfo';
+export * from './UserFilter';
+export * from './Report';
