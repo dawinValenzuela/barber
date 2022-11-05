@@ -1,6 +1,5 @@
 import {
   VStack,
-  HStack,
   Stack,
   Text,
   Heading,

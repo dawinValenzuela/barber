@@ -14,3 +14,5 @@ export * from './AddUser';
 export * from './ResumeInfo';
 export * from './UserFilter';
 export * from './Report';
+export * from './Suppliers';
+export * from './Primitives';
