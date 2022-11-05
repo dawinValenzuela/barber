@@ -124,8 +124,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       isDeleted: false,
     };
 
-    console.log('newService', newService);
-
     return addDoc(collection(db, 'barber-services'), {
       ...newService,
     });
@@ -270,6 +268,16 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setReportServices(allServices);
   };
 
+  const addSupplier = (data) => {
+    const today = new Date();
+
+    return addDoc(collection(db, 'suppliers'), {
+      ...data,
+      createdAt: today,
+      userId: loggedUser.uid,
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -293,6 +301,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         resumeServices,
         reportServices,
         getAllServices,
+        addSupplier,
       }}
     >
       {isLoadingAuth ? null : children}
