@@ -3,41 +3,45 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
+  Text,
 } from '@chakra-ui/react';
 import {
-  UseFormRegister,
-  Path,
   RegisterOptions,
   FieldValues,
-  FieldError,
-  DeepMap,
-  UseFormReturn,
   FieldPath,
+  useFormContext,
 } from 'react-hook-form';
 import React from 'react';
 
-type InputWithLabelProps<TFormValues extends FieldValues> = {
+type InputWithLabelProps = {
   formLabel?: string;
   formType?: string;
   placeholder?: string;
-  errors?: Partial<DeepMap<TFormValues, FieldError>>;
-  inputName: FieldPath<TFormValues>;
-  isDisabled?: boolean;
-  register?: UseFormRegister<TFormValues>;
+  inputName: FieldPath<FieldValues>;
   rules?: RegisterOptions;
 };
 
-export const InputWithLabel = <FieldValues extends Record<string, unknown>>({
+export const InputWithLabel = ({
   formLabel,
   formType = 'text',
   placeholder,
-  isDisabled,
-  errors,
   inputName,
-  register,
   rules,
-}: InputWithLabelProps<FieldValues>): JSX.Element => {
-  const errorMessage = errors && errors?.[inputName]?.message;
+}: InputWithLabelProps): JSX.Element => {
+  const formContext = useFormContext();
+
+  if (!formContext) {
+    return (
+      <Text color='red'>Form context is missing form field {inputName}</Text>
+    );
+  }
+
+  const {
+    register,
+    formState: { errors, isSubmitting },
+  } = formContext;
+
+  const errorMessage = errors && (errors?.[inputName]?.message as string);
 
   return (
     <FormControl isInvalid={!!errorMessage}>
@@ -45,7 +49,7 @@ export const InputWithLabel = <FieldValues extends Record<string, unknown>>({
       <Input
         type={formType}
         placeholder={placeholder}
-        isDisabled={isDisabled}
+        isDisabled={isSubmitting}
         {...(register && register(inputName, rules))}
       />
       <FormErrorMessage>{errorMessage}</FormErrorMessage>

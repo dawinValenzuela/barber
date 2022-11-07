@@ -1,5 +1,5 @@
 export interface SupplierFormData {
-  name?: string;
+  name: string;
 }
 
 export interface ProductFormData {

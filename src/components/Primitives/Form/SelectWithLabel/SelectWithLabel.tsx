@@ -3,15 +3,14 @@ import {
   FormLabel,
   Select,
   FormErrorMessage,
+  Text,
 } from '@chakra-ui/react';
 import {
-  Path,
   RegisterOptions,
   FieldValues,
-  FieldError,
-  DeepMap,
+  FieldPath,
   Controller,
-  Control,
+  useFormContext,
 } from 'react-hook-form';
 import React from 'react';
 
@@ -20,28 +19,35 @@ type Option = {
   label: string;
 };
 
-type SelectWithLabelProps<TFormValues extends FieldValues> = {
+type SelectWithLabelProps = {
   formLabel?: string;
   placeholder?: string;
-  errors?: Partial<DeepMap<TFormValues, FieldError>>;
-  inputName: Path<TFormValues>;
-  isDisabled?: boolean;
+  inputName: FieldPath<FieldValues>;
   rules?: RegisterOptions;
-  control: Control<TFormValues>;
   options: Option[] | [];
 };
 
-export const SelectWithLabel = <TFormValues extends Record<string, unknown>>({
+export const SelectWithLabel = ({
   formLabel,
   placeholder,
-  isDisabled,
-  errors,
   inputName,
-  control,
   rules,
   options,
-}: SelectWithLabelProps<TFormValues>): JSX.Element => {
-  const errorMessage = errors && errors?.[inputName]?.message;
+}: SelectWithLabelProps): JSX.Element => {
+  const formContext = useFormContext();
+
+  if (!formContext) {
+    return (
+      <Text color='red'>Form context is missing form field {inputName}</Text>
+    );
+  }
+
+  const {
+    control,
+    formState: { errors, isSubmitting },
+  } = formContext;
+
+  const errorMessage = errors && (errors?.[inputName]?.message as string);
 
   return (
     <FormControl isInvalid={!!errorMessage}>
@@ -54,7 +60,7 @@ export const SelectWithLabel = <TFormValues extends Record<string, unknown>>({
           return (
             <Select
               placeholder={placeholder}
-              isDisabled={isDisabled}
+              isDisabled={isSubmitting}
               {...field}
             >
               {options?.map((option: Option) => {
