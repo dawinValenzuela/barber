@@ -1,12 +1,17 @@
+import { UserCredential } from 'firebase/auth';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
+import { SupplierFormData } from 'src/components';
 export interface SignupProps {
   email: string;
   password: string;
 }
 
-export interface User {
-  email: string;
+export interface LoggedUser {
   uid: string;
-  displayName: string;
+  userId: string;
+  email: string;
+  displayName: string | null;
+  role: ROLE;
 }
 
 export enum ROLE {
@@ -50,4 +55,39 @@ export interface ServiceProps {
   date?: string;
   hour?: string;
   isDeleted?: boolean;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  userId: string;
+  createdAt?: string;
+}
+
+type PromiseDocumentData = Promise<DocumentReference<DocumentData>>;
+
+export interface AppContextProps {
+  user: LoggedUser;
+  addSupplier: (data: SupplierFormData) => PromiseDocumentData;
+  login: (email: string, password: string) => Promise<UserCredential>;
+  logout: () => void;
+  signup: (data: SignupProps) => Promise<UserCredential>;
+  isLoadingAuth: boolean;
+  isLoadingServices: boolean;
+  addBarberService: (data: BarberServiceProps) => PromiseDocumentData;
+  getBarberServices: () => Promise<void>;
+  addService: (data: ServiceProps) => PromiseDocumentData;
+  services: ServiceProps[];
+  getUserServices: (userId: string, date: string) => Promise<void>;
+  userServices: ServiceProps[];
+  deleteBarberService: (id: string) => Promise<void>;
+  getUsers: () => Promise<void>;
+  users: UserInfo[];
+  registerUser: (data: UserData) => PromiseDocumentData;
+  getResumeUserInfo: (userId: string) => Promise<void>;
+  resumeServices: ServiceProps[];
+  reportServices: ServiceProps[];
+  getAllServices: () => Promise<void>;
+  getSuppliers: () => Promise<void>;
+  suppliers: Supplier[];
 }

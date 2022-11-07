@@ -9,25 +9,27 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { InputWithLabel } from 'src/components';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler, DefaultValues } from 'react-hook-form';
 import { useAuth } from 'context/AuthContext';
 import Link from 'next/link';
+import { SupplierFormData } from './types';
 
-const DEFAULT_VALUES = {
+const defaultValues: DefaultValues<SupplierFormData> = {
   name: '',
 };
 
 export const Suppliers = () => {
   const { addSupplier } = useAuth();
   const toast = useToast();
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({ defaultValues });
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<SupplierFormData> = (data) => {
     try {
       addSupplier(data);
       reset();

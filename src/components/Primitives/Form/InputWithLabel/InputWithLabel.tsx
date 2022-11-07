@@ -21,7 +21,7 @@ type InputWithLabelProps<TFormValues extends FieldValues> = {
   errors?: Partial<DeepMap<TFormValues, FieldError>>;
   inputName: Path<TFormValues>;
   isDisabled?: boolean;
-  register?: UseFormRegister<TFormValues>;
+  register?: UseFormRegister<FieldValues>;
   rules?: RegisterOptions;
 };
 

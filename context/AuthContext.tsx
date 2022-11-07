@@ -13,6 +13,8 @@ import {
   where,
   doc,
   updateDoc,
+  DocumentReference,
+  DocumentData,
 } from 'firebase/firestore';
 import { AuthContextProviderProps } from './types';
 import {
@@ -21,11 +23,14 @@ import {
   ServiceProps,
   BarberServiceProps,
   UserData,
+  Supplier,
+  AppContextProps,
 } from '../types';
 
 import { auth, db } from '../firebase/config';
+import { SupplierFormData } from 'src/components';
 
-const AuthContext = createContext<any>({});
+const AuthContext = createContext<AppContextProps>({} as AppContextProps);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -36,9 +41,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [services, setServices] = useState<ServiceProps[]>([]);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
-  const [suppliers, setSuppliers] = useState([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+
+  console.log('loggedUser', loggedUser);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
@@ -269,7 +276,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setReportServices(allServices);
   };
 
-  const addSupplier = (data) => {
+  const addSupplier = (
+    data: SupplierFormData
+  ): Promise<DocumentReference<DocumentData>> => {
     const today = new Date();
 
     return addDoc(collection(db, 'suppliers'), {
@@ -280,13 +289,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   };
 
   const getSuppliers = async () => {
-    const allSuppliers = [];
+    const allSuppliers: Supplier[] = [];
     const querySnapshot = await getDocs(collection(db, 'suppliers'));
     querySnapshot.forEach((doc) => {
       const item = {
         id: doc.id,
         ...doc.data(),
-      };
+      } as Supplier;
 
       allSuppliers.push(item);
     });
