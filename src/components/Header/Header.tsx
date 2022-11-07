@@ -59,6 +59,16 @@ export const Header = () => {
                 <MenuItem>Reporte</MenuItem>
               </Link>
             )}
+            {user.role === 'owner' && (
+              <Link href='/suppliers'>
+                <MenuItem>Proveedores</MenuItem>
+              </Link>
+            )}
+            {user.role === 'owner' && (
+              <Link href='/suppliers/products'>
+                <MenuItem>Productos</MenuItem>
+              </Link>
+            )}
           </MenuList>
         </Menu>
       </Flex>

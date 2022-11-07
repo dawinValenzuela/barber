@@ -11,6 +11,8 @@ import {
   FieldValues,
   FieldError,
   DeepMap,
+  UseFormReturn,
+  FieldPath,
 } from 'react-hook-form';
 import React from 'react';
 
@@ -19,13 +21,13 @@ type InputWithLabelProps<TFormValues extends FieldValues> = {
   formType?: string;
   placeholder?: string;
   errors?: Partial<DeepMap<TFormValues, FieldError>>;
-  inputName: Path<TFormValues>;
+  inputName: FieldPath<TFormValues>;
   isDisabled?: boolean;
-  register?: UseFormRegister<FieldValues>;
+  register?: UseFormRegister<TFormValues>;
   rules?: RegisterOptions;
 };
 
-export const InputWithLabel = <TFormValues extends Record<string, unknown>>({
+export const InputWithLabel = <FieldValues extends Record<string, unknown>>({
   formLabel,
   formType = 'text',
   placeholder,
@@ -34,7 +36,7 @@ export const InputWithLabel = <TFormValues extends Record<string, unknown>>({
   inputName,
   register,
   rules,
-}: InputWithLabelProps<TFormValues>): JSX.Element => {
+}: InputWithLabelProps<FieldValues>): JSX.Element => {
   const errorMessage = errors && errors?.[inputName]?.message;
 
   return (

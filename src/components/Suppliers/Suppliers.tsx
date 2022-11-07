@@ -6,8 +6,11 @@ import {
   useToast,
   Text,
   Link as ChakraLink,
+  OrderedList,
+  Box,
+  ListItem,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { InputWithLabel } from 'src/components';
 import { useForm, SubmitHandler, DefaultValues } from 'react-hook-form';
 import { useAuth } from 'context/AuthContext';
@@ -19,15 +22,19 @@ const defaultValues: DefaultValues<SupplierFormData> = {
 };
 
 export const Suppliers = () => {
-  const { addSupplier } = useAuth();
+  const { addSupplier, suppliers, getSuppliers } = useAuth();
   const toast = useToast();
+
+  useEffect(() => {
+    getSuppliers();
+  }, []);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm({ defaultValues });
+  } = useForm<SupplierFormData>({ defaultValues });
 
   const onSubmit: SubmitHandler<SupplierFormData> = (data) => {
     try {
@@ -70,6 +77,14 @@ export const Suppliers = () => {
           </Button>
         </Stack>
       </form>
+      <Box>
+        <Heading textAlign='left'>Proveedores registrados</Heading>
+        <OrderedList>
+          {suppliers?.map((supplier) => (
+            <ListItem key={supplier.id}>{supplier.name}</ListItem>
+          ))}
+        </OrderedList>
+      </Box>
       <Link href='/'>
         <Text textAlign='center' fontSize='xl'>
           <ChakraLink>Regresar al home</ChakraLink>

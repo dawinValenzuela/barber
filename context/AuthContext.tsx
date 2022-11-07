@@ -45,8 +45,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
-  console.log('loggedUser', loggedUser);
-
   useEffect(() => {
     const getUserData = async (email: string | null) => {
       let user = null;

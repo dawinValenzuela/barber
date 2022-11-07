@@ -8,13 +8,19 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
-import { InputWithLabel, SelectWithLabel } from 'src/components';
-import { useForm } from 'react-hook-form';
+import {
+  InputWithLabel,
+  ProductFormData,
+  SelectWithLabel,
+} from 'src/components';
+import { DefaultValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useAuth } from 'context/AuthContext';
 import Link from 'next/link';
 
-const DEFAULT_VALUES = {
+const defaultValues: DefaultValues<ProductFormData> = {
   name: '',
+  value: 0,
+  supplierId: '',
 };
 
 export const Products = () => {
@@ -26,13 +32,13 @@ export const Products = () => {
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm<ProductFormData>({ defaultValues });
 
   useEffect(() => {
     getSuppliers();
   }, []);
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<ProductFormData> = (data) => {
     console.log({ data });
   };
 
