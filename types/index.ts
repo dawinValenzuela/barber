@@ -38,7 +38,7 @@ export interface BarberServiceProps {
 }
 
 export interface ServiceProps {
-  id?: string;
+  id: string;
   serviceId: string;
   name: string;
   value: number;

@@ -38,6 +38,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
@@ -278,6 +279,20 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
   };
 
+  const getSuppliers = async () => {
+    const allSuppliers = [];
+    const querySnapshot = await getDocs(collection(db, 'suppliers'));
+    querySnapshot.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      };
+
+      allSuppliers.push(item);
+    });
+    setSuppliers(allSuppliers);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -302,6 +317,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         reportServices,
         getAllServices,
         addSupplier,
+        getSuppliers,
+        suppliers,
       }}
     >
       {isLoadingAuth ? null : children}

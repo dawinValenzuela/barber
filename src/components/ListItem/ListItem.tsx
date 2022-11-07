@@ -13,8 +13,14 @@ import { MdDeleteForever } from 'react-icons/md';
 import { useAuth } from 'context/AuthContext';
 import { Alert } from '../Alert';
 import { formatToCurrency } from 'utils/formaters';
+import { ServiceProps } from 'types';
 
-export const ListItem = ({ service, itemNumber }) => {
+interface Props {
+  service: ServiceProps;
+  itemNumber: number;
+}
+
+export const ListItem = ({ service, itemNumber }: Props) => {
   const { deleteBarberService, getUserServices } = useAuth();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const toast = useToast();
@@ -26,7 +32,7 @@ export const ListItem = ({ service, itemNumber }) => {
     ? (service?.value * 60) / 100
     : service?.value;
 
-  const handleDeleteClick = (id) => {
+  const handleDeleteClick = (id: string) => {
     deleteBarberService(id)
       .then(() => {
         toast({

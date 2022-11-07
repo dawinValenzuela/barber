@@ -1,7 +1,12 @@
 import { Box, Heading, HStack, Text } from '@chakra-ui/react';
 import { formatToCurrency } from '../../../utils/formaters';
+import { ServiceProps } from 'types';
 
-export const Resume = ({ services }) => {
+interface Props {
+  services: ServiceProps[];
+}
+
+export const Resume = ({ services }: Props) => {
   const servicesCount = services?.length || 0;
 
   //We should not sum free services

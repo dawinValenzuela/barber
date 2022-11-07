@@ -7,8 +7,8 @@ import {
   Text,
   Link as ChakraLink,
 } from '@chakra-ui/react';
-import React from 'react';
-import { InputWithLabel } from 'src/components';
+import React, { useEffect } from 'react';
+import { InputWithLabel, SelectWithLabel } from 'src/components';
 import { useForm } from 'react-hook-form';
 import { useAuth } from 'context/AuthContext';
 import Link from 'next/link';
@@ -18,36 +18,28 @@ const DEFAULT_VALUES = {
 };
 
 export const Products = () => {
-  const { addSupplier } = useAuth();
+  const { addSupplier, suppliers, getSuppliers } = useAuth();
   const toast = useToast();
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm();
 
+  useEffect(() => {
+    getSuppliers();
+  }, []);
+
   const onSubmit = (data) => {
-    try {
-      addSupplier(data);
-      reset();
-      toast({
-        title: 'Muy bien',
-        description: 'El proveedor se ha guardado correctamente',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Ah ocurrido un error',
-        description: 'Error al crear el usuario',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+    console.log({ data });
   };
+
+  const optionsSuppliers = suppliers?.map((data) => ({
+    label: data.name,
+    value: data.id,
+  }));
 
   return (
     <VStack mt={7} align='stretch' px={4} spacing={5}>
@@ -63,14 +55,15 @@ export const Products = () => {
             errors={errors}
             isDisabled={isSubmitting}
           />
-          <InputWithLabel
+          <SelectWithLabel
             formLabel='proveedor'
-            placeholder='Escriba nombre del proveedor'
+            placeholder='Seleccione proveedor'
             inputName='name'
-            register={register}
             rules={{ required: 'El nombre del proveedor es requerido' }}
             errors={errors}
             isDisabled={isSubmitting}
+            control={control}
+            options={optionsSuppliers}
           />
           <InputWithLabel
             formLabel='Precio'
