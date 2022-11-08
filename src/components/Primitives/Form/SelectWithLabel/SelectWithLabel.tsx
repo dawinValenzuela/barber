@@ -1,7 +1,7 @@
 import {
   FormControl,
   FormLabel,
-  Input,
+  Select,
   FormErrorMessage,
   Text,
 } from '@chakra-ui/react';
@@ -9,25 +9,31 @@ import {
   RegisterOptions,
   FieldValues,
   FieldPath,
+  Controller,
   useFormContext,
 } from 'react-hook-form';
 import React from 'react';
 
-type InputWithLabelProps = {
+type Option = {
+  value: string;
+  label: string;
+};
+
+type SelectWithLabelProps = {
   formLabel?: string;
-  formType?: string;
   placeholder?: string;
   inputName: FieldPath<FieldValues>;
   rules?: RegisterOptions;
+  options: Option[] | [];
 };
 
-export const InputWithLabel = ({
+export const SelectWithLabel = ({
   formLabel,
-  formType = 'text',
   placeholder,
   inputName,
   rules,
-}: InputWithLabelProps): JSX.Element => {
+  options,
+}: SelectWithLabelProps): JSX.Element => {
   const formContext = useFormContext();
 
   if (!formContext) {
@@ -37,7 +43,7 @@ export const InputWithLabel = ({
   }
 
   const {
-    register,
+    control,
     formState: { errors, isSubmitting },
   } = formContext;
 
@@ -46,11 +52,27 @@ export const InputWithLabel = ({
   return (
     <FormControl isInvalid={!!errorMessage}>
       <FormLabel>{formLabel}</FormLabel>
-      <Input
-        type={formType}
-        placeholder={placeholder}
-        isDisabled={isSubmitting}
-        {...(register && register(inputName, rules))}
+      <Controller
+        control={control}
+        name={inputName}
+        rules={rules}
+        render={({ field }) => {
+          return (
+            <Select
+              placeholder={placeholder}
+              isDisabled={isSubmitting}
+              {...field}
+            >
+              {options?.map((option: Option) => {
+                return (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                );
+              })}
+            </Select>
+          );
+        }}
       />
       <FormErrorMessage>{errorMessage}</FormErrorMessage>
     </FormControl>

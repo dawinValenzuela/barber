@@ -4,14 +4,23 @@ import {
   Text,
   Spinner,
   Flex,
-  Select,
   Icon,
   IconButton,
 } from '@chakra-ui/react';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { sortBy } from 'lodash';
 import { UserFilter, ListItem } from 'src/components';
+import { ServiceProps, UserInfo } from 'types';
+
+interface Props {
+  services: ServiceProps[];
+  isLoadingServices?: boolean;
+  role: string;
+  user: UserInfo;
+  users: UserInfo[];
+  getUserServices: (userId: string, date: string) => void;
+}
 
 export const ServiceList = ({
   services = [],
@@ -20,7 +29,7 @@ export const ServiceList = ({
   user,
   users = [],
   getUserServices,
-}) => {
+}: Props) => {
   const [userSelected, setUserSelected] = useState<string>(user?.userId); // just for admin
   const [today] = useState(new Date());
   const [dateString, setDateString] = useState(today.toLocaleDateString());
@@ -29,10 +38,13 @@ export const ServiceList = ({
 
   const isAdmin = role === 'owner' || role === 'admin';
 
-  const handleOnSelectChange = (event) => {
-    const userId = event?.target?.value;
+  const handleOnSelectChange = (
+    event: ChangeEvent<HTMLSelectElement>
+  ): void => {
+    const newDate = today.toLocaleDateString();
+    const userId = event?.target?.value as string;
     setUserSelected(userId);
-    getUserServices(userId);
+    getUserServices(userId, newDate);
   };
 
   const handleLeftClick = () => {

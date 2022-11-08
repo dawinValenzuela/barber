@@ -13,6 +13,8 @@ import {
   where,
   doc,
   updateDoc,
+  DocumentReference,
+  DocumentData,
 } from 'firebase/firestore';
 import { AuthContextProviderProps } from './types';
 import {
@@ -21,11 +23,15 @@ import {
   ServiceProps,
   BarberServiceProps,
   UserData,
+  Supplier,
+  AppContextProps,
+  PromiseDocumentData,
 } from '../types';
 
 import { auth, db } from '../firebase/config';
+import { ProductFormData, SupplierFormData } from 'src/components';
 
-const AuthContext = createContext<any>({});
+const AuthContext = createContext<AppContextProps>({} as AppContextProps);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -36,8 +42,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [services, setServices] = useState<ServiceProps[]>([]);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
@@ -268,10 +275,36 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setReportServices(allServices);
   };
 
-  const addSupplier = (data) => {
+  const addSupplier = (
+    data: SupplierFormData
+  ): Promise<DocumentReference<DocumentData>> => {
     const today = new Date();
 
     return addDoc(collection(db, 'suppliers'), {
+      ...data,
+      createdAt: today,
+      userId: loggedUser.uid,
+    });
+  };
+
+  const getSuppliers = async () => {
+    const allSuppliers: Supplier[] = [];
+    const querySnapshot = await getDocs(collection(db, 'suppliers'));
+    querySnapshot.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      } as Supplier;
+
+      allSuppliers.push(item);
+    });
+    setSuppliers(allSuppliers);
+  };
+
+  const addProduct = (data: ProductFormData): PromiseDocumentData => {
+    const today = new Date();
+
+    return addDoc(collection(db, 'products'), {
       ...data,
       createdAt: today,
       userId: loggedUser.uid,
@@ -302,6 +335,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         reportServices,
         getAllServices,
         addSupplier,
+        getSuppliers,
+        suppliers,
+        addProduct,
       }}
     >
       {isLoadingAuth ? null : children}
