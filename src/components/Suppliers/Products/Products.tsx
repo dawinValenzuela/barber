@@ -12,6 +12,7 @@ import {
   InputWithLabel,
   ProductFormData,
   SelectWithLabel,
+  NumberWithLabel,
 } from 'src/components';
 import {
   DefaultValues,
@@ -24,21 +25,19 @@ import Link from 'next/link';
 
 const defaultValues: DefaultValues<ProductFormData> = {
   name: '',
-  value: 0,
+  value: '0',
   supplierId: '',
 };
 
 export const Products = () => {
-  const { addSupplier, suppliers, getSuppliers } = useAuth();
+  const { addProduct, suppliers, getSuppliers } = useAuth();
   const toast = useToast();
 
   const methods = useForm<ProductFormData>({ defaultValues });
 
   const {
-    register,
     handleSubmit,
     reset,
-    control,
     formState: { errors, isSubmitting },
   } = methods;
 
@@ -47,13 +46,33 @@ export const Products = () => {
   }, []);
 
   const onSubmit: SubmitHandler<ProductFormData> = (data: ProductFormData) => {
-    console.log({ data });
+    try {
+      addProduct(data);
+      reset(defaultValues);
+      toast({
+        title: 'Muy bien',
+        description: 'El producto se ha guardado correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Ah ocurrido un error',
+        description: 'Error al guardar el servicio',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const optionsSuppliers = suppliers?.map((data) => ({
     label: data.name,
     value: data.id,
   }));
+
+  console.log({ errors });
 
   return (
     <VStack mt={7} align='stretch' px={4} spacing={5}>
@@ -74,11 +93,16 @@ export const Products = () => {
               rules={{ required: 'El nombre del proveedor es requerido' }}
               options={optionsSuppliers}
             />
-            <InputWithLabel
+            <NumberWithLabel
               formLabel='Precio'
-              placeholder='Escriba nombre del proveedor'
               inputName='value'
-              rules={{ required: 'El nombre del proveedor es requerido' }}
+              rules={{
+                required: 'El valor es requerido',
+                min: {
+                  value: 1,
+                  message: 'El valor debe ser mayor que 0',
+                },
+              }}
             />
             <Button colorScheme='blue' type='submit' isLoading={isSubmitting}>
               Registrar
@@ -86,11 +110,11 @@ export const Products = () => {
           </Stack>
         </form>
       </FormProvider>
-      <Link href='/'>
-        <Text textAlign='center' fontSize='xl'>
+      <Text textAlign='center' fontSize='xl'>
+        <Link href='/'>
           <ChakraLink>Regresar al home</ChakraLink>
-        </Text>
-      </Link>
+        </Link>
+      </Text>
     </VStack>
   );
 };

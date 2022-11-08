@@ -5,5 +5,5 @@ export interface SupplierFormData {
 export interface ProductFormData {
   supplierId: string;
   name: string;
-  value: number;
+  value: string;
 }

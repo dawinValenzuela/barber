@@ -25,10 +25,11 @@ import {
   UserData,
   Supplier,
   AppContextProps,
+  PromiseDocumentData,
 } from '../types';
 
 import { auth, db } from '../firebase/config';
-import { SupplierFormData } from 'src/components';
+import { ProductFormData, SupplierFormData } from 'src/components';
 
 const AuthContext = createContext<AppContextProps>({} as AppContextProps);
 
@@ -300,6 +301,16 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setSuppliers(allSuppliers);
   };
 
+  const addProduct = (data: ProductFormData): PromiseDocumentData => {
+    const today = new Date();
+
+    return addDoc(collection(db, 'products'), {
+      ...data,
+      createdAt: today,
+      userId: loggedUser.uid,
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -326,6 +337,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         addSupplier,
         getSuppliers,
         suppliers,
+        addProduct,
       }}
     >
       {isLoadingAuth ? null : children}

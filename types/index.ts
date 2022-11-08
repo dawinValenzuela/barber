@@ -1,6 +1,6 @@
 import { UserCredential } from 'firebase/auth';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
-import { SupplierFormData } from 'src/components';
+import { ProductFormData, SupplierFormData } from 'src/components';
 export interface SignupProps {
   email: string;
   password: string;
@@ -64,7 +64,7 @@ export interface Supplier {
   createdAt?: string;
 }
 
-type PromiseDocumentData = Promise<DocumentReference<DocumentData>>;
+export type PromiseDocumentData = Promise<DocumentReference<DocumentData>>;
 
 export interface AppContextProps {
   user: LoggedUser;
@@ -90,4 +90,5 @@ export interface AppContextProps {
   getAllServices: () => Promise<void>;
   getSuppliers: () => Promise<void>;
   suppliers: Supplier[];
+  addProduct: (data: ProductFormData) => PromiseDocumentData;
 }
