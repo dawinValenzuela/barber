@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-} from 'firebase/auth';
+} from "firebase/auth";
 import {
   collection,
   addDoc,
@@ -15,8 +15,8 @@ import {
   updateDoc,
   DocumentReference,
   DocumentData,
-} from 'firebase/firestore';
-import { AuthContextProviderProps } from './types';
+} from "firebase/firestore";
+import { AuthContextProviderProps } from "./types";
 import {
   UserInfo,
   SignupProps,
@@ -26,10 +26,11 @@ import {
   Supplier,
   AppContextProps,
   PromiseDocumentData,
-} from '../types';
+  Product,
+} from "../types";
 
-import { auth, db } from '../firebase/config';
-import { ProductFormData, SupplierFormData } from 'src/components';
+import { auth, db } from "../firebase/config";
+import { ProductFormData, SupplierFormData } from "src/components";
 
 const AuthContext = createContext<AppContextProps>({} as AppContextProps);
 
@@ -45,11 +46,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
       let user = null;
-      const q = query(collection(db, 'users'), where('email', '==', email));
+      const q = query(collection(db, "users"), where("email", "==", email));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         user = {
@@ -88,7 +90,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   };
 
   const registerUser = (data: UserData) => {
-    return addDoc(collection(db, 'users'), data);
+    return addDoc(collection(db, "users"), data);
   };
 
   const login = (email: string, password: string) => {
@@ -107,7 +109,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   }
 
   const addBarberService = ({ name, value, userId }: BarberServiceProps) => {
-    return addDoc(collection(db, 'services'), {
+    return addDoc(collection(db, "services"), {
       name,
       value,
       userId,
@@ -131,7 +133,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       isDeleted: false,
     };
 
-    return addDoc(collection(db, 'barber-services'), {
+    return addDoc(collection(db, "barber-services"), {
       ...newService,
     });
   };
@@ -140,7 +142,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setIsLoadingServices(true);
     const allServices: ServiceProps[] = [];
 
-    let dateString = '';
+    let dateString = "";
 
     if (date) {
       dateString = date;
@@ -150,10 +152,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
 
     const q = query(
-      collection(db, 'barber-services'),
-      where('userId', '==', userId || loggedUser.uid),
-      where('isDeleted', '==', false),
-      where('date', '==', dateString)
+      collection(db, "barber-services"),
+      where("userId", "==", userId || loggedUser.uid),
+      where("isDeleted", "==", false),
+      where("date", "==", dateString)
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -172,7 +174,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const getBarberServices = async () => {
     const allServices: ServiceProps[] = [];
-    const querySnapshot = await getDocs(collection(db, 'services'));
+    const querySnapshot = await getDocs(collection(db, "services"));
     querySnapshot.forEach((doc) => {
       const service = {
         id: doc.id,
@@ -185,13 +187,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   };
 
   const deleteBarberService = (id: string) => {
-    const docRef = doc(db, 'barber-services', id);
+    const docRef = doc(db, "barber-services", id);
     return updateDoc(docRef, { isDeleted: true });
   };
 
   const getUsers = async () => {
     const allUsers: UserInfo[] = [];
-    const q = query(collection(db, 'users'), where('role', '==', 'barber'));
+    const q = query(collection(db, "users"), where("role", "==", "barber"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       const docData = doc.data();
@@ -218,11 +220,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     // console.log(lastDay);
 
     const q = query(
-      collection(db, 'barber-services'),
-      where('createdAt', '>=', firstDay),
-      where('createdAt', '<=', lastDay),
-      where('isDeleted', '==', false),
-      where('userId', '==', userId || loggedUser.uid)
+      collection(db, "barber-services"),
+      where("createdAt", ">=", firstDay),
+      where("createdAt", "<=", lastDay),
+      where("isDeleted", "==", false),
+      where("userId", "==", userId || loggedUser.uid)
     );
 
     const querySnapshot = await getDocs(q);
@@ -253,10 +255,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     // console.log(lastDay);
 
     const q = query(
-      collection(db, 'barber-services'),
-      where('createdAt', '>=', firstDay),
-      where('createdAt', '<=', lastDay),
-      where('isDeleted', '==', false)
+      collection(db, "barber-services"),
+      where("createdAt", ">=", firstDay),
+      where("createdAt", "<=", lastDay),
+      where("isDeleted", "==", false)
     );
 
     const querySnapshot = await getDocs(q);
@@ -280,7 +282,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   ): Promise<DocumentReference<DocumentData>> => {
     const today = new Date();
 
-    return addDoc(collection(db, 'suppliers'), {
+    return addDoc(collection(db, "suppliers"), {
       ...data,
       createdAt: today,
       userId: loggedUser.uid,
@@ -289,7 +291,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const getSuppliers = async () => {
     const allSuppliers: Supplier[] = [];
-    const querySnapshot = await getDocs(collection(db, 'suppliers'));
+    const querySnapshot = await getDocs(collection(db, "suppliers"));
     querySnapshot.forEach((doc) => {
       const item = {
         id: doc.id,
@@ -304,11 +306,25 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const addProduct = (data: ProductFormData): PromiseDocumentData => {
     const today = new Date();
 
-    return addDoc(collection(db, 'products'), {
+    return addDoc(collection(db, "products"), {
       ...data,
       createdAt: today,
       userId: loggedUser.uid,
     });
+  };
+
+  const getProducts = async () => {
+    const allProducts: Product[] = [];
+    const querySnapshot = await getDocs(collection(db, "products"));
+    querySnapshot.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      } as Product;
+
+      allProducts.push(item);
+    });
+    setProducts(allProducts);
   };
 
   return (
@@ -338,6 +354,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         getSuppliers,
         suppliers,
         addProduct,
+        getProducts,
+        products,
       }}
     >
       {isLoadingAuth ? null : children}
