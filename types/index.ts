@@ -64,6 +64,15 @@ export interface Supplier {
   createdAt?: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  value: number;
+  userId: string;
+  createdAt?: string;
+  supplierId?: string;
+}
+
 export type PromiseDocumentData = Promise<DocumentReference<DocumentData>>;
 
 export interface AppContextProps {
@@ -91,4 +100,6 @@ export interface AppContextProps {
   getSuppliers: () => Promise<void>;
   suppliers: Supplier[];
   addProduct: (data: ProductFormData) => PromiseDocumentData;
+  getProducts: () => Promise<void>;
+  products: Product[];
 }
