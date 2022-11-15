@@ -1,6 +1,5 @@
 import { NextPage } from "next";
-import { Products } from "src/components";
-import { ProductList } from "src/components/ProductList";
+import { Products, ProductList } from "src/components";
 
 const SuppliersProductsPage: NextPage = () => {
   return (

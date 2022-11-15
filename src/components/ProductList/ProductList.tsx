@@ -1,22 +1,12 @@
 import React, { useEffect } from "react";
 import { useAuth } from "context/AuthContext";
 import {
-  Box,
-  Flex,
-  Text,
-  Badge,
-  IconButton,
-  Icon,
-  useToast,
-  Divider,
   Table,
   Thead,
   Tbody,
-  Tfoot,
-  Tr,
   Th,
   Td,
-  TableCaption,
+  Tr,
   TableContainer,
   VStack,
   Heading,
@@ -30,9 +20,6 @@ export const ProductList = () => {
     getSuppliers();
   }, []);
 
-  console.log(products);
-
-  //compare products with suppliers
   const productsWithSuppliers = products?.map((product) => {
     const supplier = suppliers?.find(
       (supplier) => supplier.id === product.supplierId
