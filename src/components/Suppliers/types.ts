@@ -7,3 +7,9 @@ export interface ProductFormData {
   name: string;
   value: string;
 }
+
+export interface ProductInventoryFormData {
+  productId: string;
+  name: string;
+  value: string;
+}
