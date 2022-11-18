@@ -20,7 +20,6 @@ import {
 import Link from "next/link";
 
 const defaultValues: DefaultValues<ProductInventoryFormData> = {
-  name: "",
   value: "0",
   productId: "",
 };
@@ -38,8 +37,6 @@ export const AddInventoryProduct = () => {
   useEffect(() => {
     getProducts();
   }, []);
-
-  console.log(products);
 
   const onSubmit: SubmitHandler<ProductInventoryFormData> = (
     data: ProductInventoryFormData
