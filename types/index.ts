@@ -12,6 +12,7 @@ export interface LoggedUser {
   email: string;
   displayName: string | null;
   role: ROLE;
+  fullName?: string;
 }
 
 export enum ROLE {

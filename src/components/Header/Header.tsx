@@ -7,20 +7,20 @@ import {
   MenuItem,
   Button,
   Avatar,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useAuth } from 'context/AuthContext';
 import Link from 'next/link';
+import { Navbar } from './components/Navbar';
 
 export const Header = () => {
   const { logout, user } = useAuth();
-
-  console.log('user', user);
 
   return (
     <Flex
       as='header'
       px={4}
-      bg='gray.200'
+      bg={useColorModeValue('gray.100', 'gray.900')}
       width='full'
       position='sticky'
       top={0}
@@ -32,7 +32,8 @@ export const Header = () => {
         width='full'
       >
         <Heading size='lg'>{user?.fullName}</Heading>
-        <Menu>
+        <Navbar />
+        {/* <Menu>
           <MenuButton
             as={Button}
             rounded={'full'}
@@ -70,7 +71,7 @@ export const Header = () => {
               </Link>
             )}
           </MenuList>
-        </Menu>
+        </Menu> */}
       </Flex>
     </Flex>
   );
