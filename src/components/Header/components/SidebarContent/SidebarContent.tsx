@@ -33,9 +33,7 @@ export const SidebarContent = ({ onClose, user, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {NAVIGATION_LINKS.map((link) => (
-        <NavItem key={link.label} href={link.href} icon={link.icon}>
-          {link.label}
-        </NavItem>
+        <NavItem key={link.label} linkData={link} />
       ))}
     </Box>
   );

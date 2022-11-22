@@ -30,7 +30,7 @@ export interface UserData {
 }
 
 export interface UserInfo {
-  id: string;
+  uid: string;
   email: string;
   fullName: string;
   role: ROLE;
