@@ -1,77 +1,74 @@
+import React, { ReactNode } from 'react';
 import {
+  IconButton,
+  Box,
+  CloseButton,
   Flex,
-  Heading,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button,
-  Avatar,
+  Icon,
+  useColorModeValue,
+  Link,
+  Drawer,
+  DrawerContent,
+  Text,
+  useDisclosure,
+  BoxProps,
+  FlexProps,
 } from '@chakra-ui/react';
+import {
+  FiHome,
+  FiTrendingUp,
+  FiCompass,
+  FiStar,
+  FiSettings,
+  FiMenu,
+} from 'react-icons/fi';
+import { IconType } from 'react-icons';
+import { SidebarContent } from './components/SidebarContent';
+import { MobileNav } from './components/MobileNav';
 import { useAuth } from 'context/AuthContext';
-import Link from 'next/link';
+
+interface LinkItemProps {
+  name: string;
+  icon: IconType;
+}
+const LinkItems: Array<LinkItemProps> = [
+  { name: 'Home', icon: FiHome },
+  { name: 'Trending', icon: FiTrendingUp },
+  { name: 'Explore', icon: FiCompass },
+  { name: 'Favourites', icon: FiStar },
+  { name: 'Settings', icon: FiSettings },
+];
 
 export const Header = () => {
-  const { logout, user } = useAuth();
-
-  console.log('user', user);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { user } = useAuth();
 
   return (
-    <Flex
-      as='header'
-      px={4}
-      bg='gray.200'
-      width='full'
-      position='sticky'
-      top={0}
-    >
-      <Flex
-        h={16}
-        alignItems='center'
-        justifyContent='space-between'
-        width='full'
+    <Box position='sticky' top={0}>
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: 'none', md: 'block' }}
+        user={user}
+      />
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpen}
+        placement='left'
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+        size='full'
       >
-        <Heading size='lg'>{user?.fullName}</Heading>
-        <Menu>
-          <MenuButton
-            as={Button}
-            rounded={'full'}
-            variant={'link'}
-            cursor={'pointer'}
-            minW={0}
-          >
-            <Avatar
-              name={user?.fullName}
-              size='md'
-              bg='gray.700'
-              color='white'
-            />
-          </MenuButton>
-          <MenuList zIndex={10}>
-            <MenuItem onClick={logout}>Cerrar sesion</MenuItem>
-            {user.role === 'owner' && (
-              <Link href='/users/add'>
-                <MenuItem>Crear usuario</MenuItem>
-              </Link>
-            )}
-            {user.role === 'owner' && (
-              <Link href='/report'>
-                <MenuItem>Reporte</MenuItem>
-              </Link>
-            )}
-            {user.role === 'owner' && (
-              <Link href='/suppliers'>
-                <MenuItem>Proveedores</MenuItem>
-              </Link>
-            )}
-            {user.role === 'owner' && (
-              <Link href='/suppliers/products'>
-                <MenuItem>Productos</MenuItem>
-              </Link>
-            )}
-          </MenuList>
-        </Menu>
-      </Flex>
-    </Flex>
+        <DrawerContent>
+          <SidebarContent onClose={onClose} user={user} />
+        </DrawerContent>
+      </Drawer>
+      {/* mobilenav */}
+      <MobileNav
+        display={{ base: 'flex', md: 'none' }}
+        onOpen={onOpen}
+        user={user}
+      />
+    </Box>
   );
 };

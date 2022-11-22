@@ -68,7 +68,7 @@ export const ServiceList = ({
       </Heading>
       <Flex justifyContent='space-between' mb={5}>
         <IconButton
-          colorScheme='blue'
+          colorScheme='brand'
           aria-label='left'
           icon={<Icon as={MdKeyboardArrowLeft} w={8} h={8} />}
           onClick={handleLeftClick}
@@ -77,7 +77,7 @@ export const ServiceList = ({
           {dateString}
         </Text>
         <IconButton
-          colorScheme='blue'
+          colorScheme='brand'
           aria-label='right'
           icon={<Icon as={MdKeyboardArrowRight} w={8} h={8} />}
           onClick={handleRightClick}

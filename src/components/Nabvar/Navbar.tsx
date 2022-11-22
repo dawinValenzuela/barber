@@ -21,6 +21,7 @@ export const Navbar = () => {
       borderTop='1px solid #eee'
       justifyContent='center'
       bottom={0}
+      // display={{ base: 'flex', md: 'none' }}
     >
       <Flex
         h='100%'

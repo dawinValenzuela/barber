@@ -12,6 +12,7 @@ export interface LoggedUser {
   email: string;
   displayName: string | null;
   role: ROLE;
+  fullName?: string;
 }
 
 export enum ROLE {
@@ -29,7 +30,7 @@ export interface UserData {
 }
 
 export interface UserInfo {
-  id: string;
+  uid: string;
   email: string;
   fullName: string;
   role: ROLE;
