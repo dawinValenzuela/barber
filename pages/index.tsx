@@ -41,7 +41,6 @@ const Home: NextPage = () => {
           users={users}
         />
       </Container>
-      <Navbar />
     </>
   );
 };
