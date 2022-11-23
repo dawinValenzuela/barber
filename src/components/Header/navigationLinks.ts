@@ -6,6 +6,7 @@ import {
   FiCoffee,
   FiArchive,
   FiUserPlus,
+  FiFileText
 } from 'react-icons/fi';
 
 export const NAVIGATION_LINKS = [
@@ -40,10 +41,15 @@ export const NAVIGATION_LINKS = [
         icon: FiTruck,
       },
       {
-        label: 'Productos',
+        label: 'Articulos',
         href: '/suppliers/products',
         icon: FiCoffee,
       },
+      {
+        label: 'Productos',
+        href: '/inventory/add-product',
+        icon: FiFileText,
+      }
     ],
   },
 ];
