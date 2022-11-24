@@ -32,7 +32,7 @@ export const ProductList = () => {
 
   return (
     <VStack align="stretch" px={4} mt={7} spacing={8}>
-      <Heading textAlign="center">Listado de Productos</Heading>
+      <Heading textAlign="center">Listado de Articulos</Heading>
       <TableContainer>
         <Table variant="simple">
           <Thead>

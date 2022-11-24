@@ -6,27 +6,27 @@ import {
   useToast,
   Text,
   Link as ChakraLink,
-} from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+} from "@chakra-ui/react";
+import React, { useEffect } from "react";
 import {
   InputWithLabel,
   ProductFormData,
   SelectWithLabel,
   NumberWithLabel,
-} from 'src/components';
+} from "src/components";
 import {
   DefaultValues,
   SubmitHandler,
   useForm,
   FormProvider,
-} from 'react-hook-form';
-import { useAuth } from 'context/AuthContext';
-import Link from 'next/link';
+} from "react-hook-form";
+import { useAuth } from "context/AuthContext";
+import Link from "next/link";
 
 const defaultValues: DefaultValues<ProductFormData> = {
-  name: '',
-  value: '0',
-  supplierId: '',
+  name: "",
+  value: "0",
+  supplierId: "",
 };
 
 export const Products = () => {
@@ -50,17 +50,17 @@ export const Products = () => {
       addProduct(data);
       reset(defaultValues);
       toast({
-        title: 'Muy bien',
-        description: 'El producto se ha guardado correctamente',
-        status: 'success',
+        title: "Muy bien",
+        description: "El producto se ha guardado correctamente",
+        status: "success",
         duration: 5000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        title: 'Ah ocurrido un error',
-        description: 'Error al guardar el servicio',
-        status: 'error',
+        title: "Ah ocurrido un error",
+        description: "Error al guardar el servicio",
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -75,43 +75,43 @@ export const Products = () => {
   console.log({ errors });
 
   return (
-    <VStack mt={7} align='stretch' px={4} spacing={5}>
-      <Heading textAlign='center'>Crear producto</Heading>
+    <VStack mt={7} align="stretch" px={4} spacing={5}>
+      <Heading textAlign="center">Crear Articulo</Heading>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={5}>
             <InputWithLabel
-              formLabel='Nombre producto'
-              placeholder='Escriba nombre del producto'
-              inputName='name'
-              rules={{ required: 'El nombre del producto es requerido' }}
+              formLabel="Nombre producto"
+              placeholder="Escriba nombre del producto"
+              inputName="name"
+              rules={{ required: "El nombre del producto es requerido" }}
             />
             <SelectWithLabel
-              formLabel='proveedor'
-              placeholder='Seleccione proveedor'
-              inputName='supplierId'
-              rules={{ required: 'El nombre del proveedor es requerido' }}
+              formLabel="proveedor"
+              placeholder="Seleccione proveedor"
+              inputName="supplierId"
+              rules={{ required: "El nombre del proveedor es requerido" }}
               options={optionsSuppliers}
             />
             <NumberWithLabel
-              formLabel='Precio'
-              inputName='value'
+              formLabel="Precio"
+              inputName="value"
               rules={{
-                required: 'El valor es requerido',
+                required: "El valor es requerido",
                 min: {
                   value: 1,
-                  message: 'El valor debe ser mayor que 0',
+                  message: "El valor debe ser mayor que 0",
                 },
               }}
             />
-            <Button colorScheme='blue' type='submit' isLoading={isSubmitting}>
+            <Button colorScheme="blue" type="submit" isLoading={isSubmitting}>
               Registrar
             </Button>
           </Stack>
         </form>
       </FormProvider>
-      <Text textAlign='center' fontSize='xl'>
-        <Link href='/'>
+      <Text textAlign="center" fontSize="xl">
+        <Link href="/">
           <ChakraLink>Regresar al home</ChakraLink>
         </Link>
       </Text>
