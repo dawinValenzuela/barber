@@ -79,7 +79,7 @@ export const AddService = () => {
   const onSubmit = async (data: FormData) => {
     try {
       await addService(data);
-      reset(formDefaultValues);
+      // reset(formDefaultValues);
       toast({
         title: 'Muy bien',
         description: 'El servicio se ha guardado correctamente',

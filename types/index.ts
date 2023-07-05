@@ -51,3 +51,20 @@ export interface ServiceProps {
   hour?: string;
   isDeleted?: boolean;
 }
+
+export interface Output {
+  paymentDate: string;
+  createdAt: string;
+  value: string;
+  isDeleted: boolean;
+  detail: string;
+  createdBy: string;
+  id: string;
+}
+
+export interface Suplier {
+  id?: string;
+  name: string;
+  createdAt: string;
+  userId: string;
+}

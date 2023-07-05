@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut,
 } from 'firebase/auth';
 import {
@@ -13,6 +14,11 @@ import {
   where,
   doc,
   updateDoc,
+  Query,
+  QuerySnapshot,
+  DocumentData,
+  QueryDocumentSnapshot,
+  DocumentReference,
 } from 'firebase/firestore';
 import { AuthContextProviderProps } from './types';
 import {
@@ -21,6 +27,8 @@ import {
   ServiceProps,
   BarberServiceProps,
   UserData,
+  Output,
+  Suplier,
 } from '../types';
 
 import { auth, db } from '../firebase/config';
@@ -38,6 +46,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [userServices, setUserServices] = useState<ServiceProps[]>([]);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [outputs, setOutputs] = useState<Output[]>([]);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
@@ -93,6 +102,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     await signOut(auth);
   };
 
+  const resetPassword = (email: string) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
   interface Service {
     name: string;
     value: number;
@@ -126,6 +139,20 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     return addDoc(collection(db, 'barber-services'), {
       ...newService,
+    });
+  };
+
+  const addOutputPayment = (data) => {
+    const today = new Date();
+
+    const newOutput = {
+      ...data,
+      createdAt: today,
+      isDeleted: false,
+    };
+
+    return addDoc(collection(db, 'outputs'), {
+      ...newOutput,
     });
   };
 
@@ -207,7 +234,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     // console.log(firstDay);
 
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const lastDay = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
     // console.log(lastDay);
 
     const q = query(
@@ -242,7 +277,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     // console.log(firstDay);
 
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const lastDay = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
     // console.log(lastDay);
 
     const q = query(
@@ -268,8 +311,49 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setReportServices(allServices);
   };
 
-  const addSupplier = (data) => {
-    const today = new Date();
+  const getAllOutputs = async (): Promise<void> => {
+    const allOutputs: Array<Output> = [];
+
+    const now: Date = new Date();
+
+    const firstDay: Date = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const lastDay: Date = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    const q: Query = query(
+      collection(db, 'outputs'),
+      where('createdAt', '>=', firstDay),
+      where('createdAt', '<=', lastDay)
+    );
+
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+
+    querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+      const docData: DocumentData = doc.data();
+
+      const output = {
+        ...docData,
+        id: doc.id,
+      } as Output;
+
+      allOutputs.push(output);
+    });
+
+    setOutputs(allOutputs);
+  };
+
+  const addSupplier = (
+    data: Suplier
+  ): Promise<DocumentReference<DocumentData>> => {
+    const today: Date = new Date();
 
     return addDoc(collection(db, 'suppliers'), {
       ...data,
@@ -302,6 +386,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         reportServices,
         getAllServices,
         addSupplier,
+        resetPassword,
+        addOutputPayment,
+        getAllOutputs,
+        outputs,
       }}
     >
       {isLoadingAuth ? null : children}

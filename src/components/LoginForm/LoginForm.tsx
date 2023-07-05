@@ -37,11 +37,18 @@ export const LoginForm = () => {
 
   const router = useRouter();
   const toast = useToast();
-  const { login } = useAuth();
+  const { login, resetPassword } = useAuth();
+
+  const handleReset = () => {
+    resetPassword('dawin.valenzuela@gmail.com');
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
-      await login(data.email, md5(data.password));
+      // N9qNh8TApnD9fvh
+      console.log(data.email, data.password);
+      console.log(data.email, md5(data.password));
+      await login(data.email, data.password);
       router.replace('/');
     } catch (error) {
       toast({
@@ -111,6 +118,16 @@ export const LoginForm = () => {
                 <Stack spacing='6'>
                   <Button variant='solid' colorScheme='blue' type='submit'>
                     Iniciar sessión
+                  </Button>
+                </Stack>
+                {/* Reset password link button */}
+                <Stack spacing='6'>
+                  <Button
+                    variant='outline'
+                    colorScheme='gray'
+                    onClick={handleReset}
+                  >
+                    Recuperar contraseña
                   </Button>
                 </Stack>
               </Stack>
