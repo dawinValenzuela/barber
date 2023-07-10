@@ -269,24 +269,35 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setResumeServices(allServices);
   };
 
-  const getAllServices = async () => {
+  const getAllServices = async (
+    initialDate: string = '',
+    endDate: string = ''
+  ) => {
     const allServices: ServiceProps[] = [];
 
-    const now = new Date();
+    let firstDay: Date;
+    let lastDay: Date;
 
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    // console.log(firstDay);
+    if (initialDate && endDate) {
+      firstDay = new Date(initialDate);
+      firstDay.setHours(0, 0, 0, 0);
 
-    const lastDay = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999
-    );
-    // console.log(lastDay);
+      lastDay = new Date(endDate);
+      lastDay.setHours(23, 59, 59, 999);
+    } else {
+      const now = new Date();
+      console.log(typeof now, 'type');
+      firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      lastDay = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      );
+    }
 
     const q = query(
       collection(db, 'barber-services'),
@@ -311,22 +322,34 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setReportServices(allServices);
   };
 
-  const getAllOutputs = async (): Promise<void> => {
+  const getAllOutputs = async (
+    initialDate: string = '',
+    endDate: string = ''
+  ): Promise<void> => {
     const allOutputs: Array<Output> = [];
 
-    const now: Date = new Date();
+    let firstDay: Date;
+    let lastDay: Date;
 
-    const firstDay: Date = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (initialDate && endDate) {
+      firstDay = new Date(initialDate);
+      firstDay.setHours(0, 0, 0, 0);
 
-    const lastDay: Date = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999
-    );
+      lastDay = new Date(endDate);
+      lastDay.setHours(23, 59, 59, 999);
+    } else {
+      const now = new Date();
+      firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      lastDay = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      );
+    }
 
     const q: Query = query(
       collection(db, 'outputs'),
