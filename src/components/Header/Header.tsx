@@ -14,8 +14,6 @@ import Link from 'next/link';
 export const Header = () => {
   const { logout, user } = useAuth();
 
-  console.log('user', user);
-
   return (
     <Flex
       as='header'

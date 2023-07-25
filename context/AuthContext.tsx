@@ -162,6 +162,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     let dateString = '';
 
+    console.log(date, 'date');
+
     if (date) {
       dateString = date;
     } else {

@@ -31,8 +31,9 @@ export const ServiceList = ({
 
   const handleOnSelectChange = (event) => {
     const userId = event?.target?.value;
+
     setUserSelected(userId);
-    getUserServices(userId);
+    getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {
