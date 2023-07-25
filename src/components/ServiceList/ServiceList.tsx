@@ -29,8 +29,10 @@ export const ServiceList = ({
 
   const isAdmin = role === 'owner' || role === 'admin';
 
-  const handleOnSelectChange = (event) => {
-    const userId = event?.target?.value;
+  const handleOnSelectChange = (
+    event: React.SyntheticEvent<HTMLSelectElement>
+  ) => {
+    const userId = (event.target as HTMLSelectElement)?.value;
 
     setUserSelected(userId);
     getUserServices(userId, dateString);
