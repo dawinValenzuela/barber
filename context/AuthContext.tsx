@@ -29,6 +29,8 @@ import {
   UserData,
   Output,
   Suplier,
+  Product,
+  Supplier,
 } from '../types';
 
 import { auth, db } from '../firebase/config';
@@ -47,6 +49,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(false);
   const [outputs, setOutputs] = useState<Output[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     const getUserData = async (email: string | null) => {
@@ -387,6 +391,34 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     });
   };
 
+  const getProducts = async () => {
+    const allProducts: Product[] = [];
+    const querySnapshot = await getDocs(collection(db, 'products'));
+    querySnapshot.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      } as Product;
+
+      allProducts.push(item);
+    });
+    setProducts(allProducts);
+  };
+
+  const getSuppliers = async () => {
+    const allSuppliers: Supplier[] = [];
+    const querySnapshot = await getDocs(collection(db, 'suppliers'));
+    querySnapshot.forEach((doc) => {
+      const item = {
+        id: doc.id,
+        ...doc.data(),
+      } as Supplier;
+
+      allSuppliers.push(item);
+    });
+    setSuppliers(allSuppliers);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -415,6 +447,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         addOutputPayment,
         getAllOutputs,
         outputs,
+        getProducts,
+        products,
+        getSuppliers,
+        suppliers,
       }}
     >
       {isLoadingAuth ? null : children}

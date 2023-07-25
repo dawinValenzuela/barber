@@ -68,3 +68,19 @@ export interface Suplier {
   createdAt: string;
   userId: string;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  value: number;
+  userId: string;
+  createdAt?: string;
+  supplierId?: string;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  userId: string;
+  createdAt?: string;
+}
