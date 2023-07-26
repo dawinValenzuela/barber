@@ -1,4 +1,8 @@
 {
   "cSpell.words": ["Firestore"],
-  "CodeGPT.model": "gpt-4"
+  "CodeGPT.model": "gpt-4",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": false
+  }
 }

@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
 import { LoginForm } from 'src/components';
-import { useAuth } from 'context/AuthContext';
+// import { useAuth } from 'context/AuthContext';
 import { useRouter } from 'next/router';
+
+import { useAuth } from 'src/services/userService';
 
 function Login() {
   const { user } = useAuth();
   const router = useRouter();
 
+  console.log('user', user);
+
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.id) {
       router.replace('/');
     }
   }, [user, router]);
