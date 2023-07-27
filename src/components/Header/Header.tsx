@@ -8,11 +8,17 @@ import {
   Button,
   Avatar,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
+// import { useAuth } from 'context/AuthContext';
+import { useAuth } from 'src/services/userService';
 import Link from 'next/link';
 
 export const Header = () => {
-  const { logout, user } = useAuth();
+  // const { handleLogout, user } = useAuth();
+
+  const handleLogout = () => {};
+  const user = {};
+
+  console.log('user', user);
 
   return (
     <Flex
@@ -46,13 +52,13 @@ export const Header = () => {
             />
           </MenuButton>
           <MenuList zIndex={10}>
-            <MenuItem onClick={logout}>Cerrar sesion</MenuItem>
-            {user.role === 'owner' && (
+            <MenuItem onClick={handleLogout}>Cerrar sesion</MenuItem>
+            {user?.role === 'owner' && (
               <Link href='/users/add'>
                 <MenuItem>Crear usuario</MenuItem>
               </Link>
             )}
-            {user.role === 'owner' && (
+            {user?.role === 'owner' && (
               <Link href='/report'>
                 <MenuItem>Reporte</MenuItem>
               </Link>

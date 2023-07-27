@@ -1,19 +1,18 @@
-import { useSelector, useDispatch } from 'react-redux';
 import { useAppSelector, useAppDispatch } from './store';
-// import { loginUser, logoutUser } from '../store/actions/authActions';
-import { loginUser } from '../store/auth/slice';
-
-// Define the shape of your state
-interface State {
-  auth: {
-    user: any;
-    isLoggedIn: boolean;
-  };
-}
+import { loginUser, logoutUser, checkAuthState } from 'src/store/auth/actions';
+import { useEffect, useCallback } from 'react';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { user, status, error } = useAppSelector((state) => state.auth);
+
+  const memoizedDispatch = useCallback(dispatch, [dispatch]);
+
+  useEffect(() => {
+    if (!user) {
+      memoizedDispatch(checkAuthState());
+    }
+  }, [memoizedDispatch, user]);
 
   const handleLogin = (userCredentials: {
     email: string;
@@ -23,10 +22,8 @@ export const useAuth = () => {
   };
 
   const handleLogout = () => {
-    // dispatch(logoutUser());
+    dispatch(logoutUser());
   };
-
-  console.log({ user, error });
 
   return {
     user,
