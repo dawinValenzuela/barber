@@ -38,7 +38,8 @@ export const loginUser = createAsyncThunk<
 
     return {
       email: user.email,
-      id: user.uid,
+      id: userData.userId,
+      uid: user.uid,
       phone: userData.phone,
       fullName: userData.fullName,
       role: userData.role,
@@ -79,7 +80,8 @@ export const checkAuthState = createAsyncThunk<
 
     return {
       email: user.email,
-      id: user.uid,
+      uid: user.uid,
+      userId: userData.userId,
       phone: userData.phone,
       fullName: userData.fullName,
       role: userData.role,
@@ -88,5 +90,34 @@ export const checkAuthState = createAsyncThunk<
   } catch (error) {
     const firebaseError = error as FirebaseError;
     return rejectWithValue({ error: firebaseError.message });
+  }
+});
+
+export const fetchUsers = createAsyncThunk<
+  UserState[],
+  void,
+  { rejectValue: string }
+>('users/fetchUsers', async (_, thunkAPI) => {
+  try {
+    const allUsers: UserState[] = [];
+
+    const q = query(collection(db, 'users'), where('role', '==', 'barber'));
+    const querySnapshot: QuerySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data() as User;
+
+      const item: UserState = {
+        uid: doc.id,
+        ...docData,
+      };
+
+      allUsers.push(item);
+    });
+
+    return allUsers;
+  } catch (error) {
+    const firebaseError = error as FirebaseError;
+    return thunkAPI.rejectWithValue(firebaseError.message);
   }
 });

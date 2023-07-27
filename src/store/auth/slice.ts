@@ -1,8 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { initialState, UserState } from './types';
-import { loginUser, logoutUser, checkAuthState } from './actions';
+import type { UserState, AuthState } from './types';
+import { loginUser, logoutUser, checkAuthState, fetchUsers } from './actions';
+
+const initialState: AuthState = {
+  user: null,
+  users: [],
+  error: null,
+  status: 'idle',
+};
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -53,6 +60,17 @@ export const authSlice = createSlice({
           state.error = action.payload.error;
         }
         state.status = 'idle';
+      })
+      .addCase(fetchUsers.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.users = action.payload;
+        state.status = 'idle';
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
       });
   },
 });

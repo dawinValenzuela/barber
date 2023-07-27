@@ -20,7 +20,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import md5 from 'md5';
-import { useAuth } from 'src/services/userService';
+import { useAuth } from 'src/services/useUsers';
 
 interface FormData {
   email: string;

@@ -9,7 +9,7 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 // import { useAuth } from 'context/AuthContext';
-import { useAuth } from 'src/services/userService';
+import { useAuth } from 'src/services/useUsers';
 import Link from 'next/link';
 
 export const Header = () => {

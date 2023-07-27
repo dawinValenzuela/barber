@@ -1,10 +1,15 @@
 import { useAppSelector, useAppDispatch } from './store';
-import { loginUser, logoutUser, checkAuthState } from 'src/store/auth/actions';
+import {
+  loginUser,
+  logoutUser,
+  checkAuthState,
+  fetchUsers,
+} from 'src/store/auth/actions';
 import { useEffect, useCallback } from 'react';
 
-export const useAuth = () => {
+export const useUsers = () => {
   const dispatch = useAppDispatch();
-  const { user, status, error } = useAppSelector((state) => state.auth);
+  const { user, users, status, error } = useAppSelector((state) => state.auth);
 
   const memoizedDispatch = useCallback(dispatch, [dispatch]);
 
@@ -25,11 +30,17 @@ export const useAuth = () => {
     dispatch(logoutUser());
   };
 
+  const getUsers = useCallback(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
   return {
     user,
+    users,
     status,
     error,
     handleLogin,
     handleLogout,
+    getUsers,
   };
 };

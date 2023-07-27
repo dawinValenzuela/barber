@@ -4,6 +4,8 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import { ServiceList, Resume, Navbar } from 'src/components';
+import { useServices } from 'src/services/useServices';
+import { useUsers } from 'src/services/useUsers';
 
 const Home: NextPage = () => {
   const {
@@ -11,16 +13,20 @@ const Home: NextPage = () => {
     getUserServices,
     userServices,
     isLoadingServices,
-    getUsers,
-    users,
-    user,
   } = useAuth();
 
+  const { user, users, getUsers } = useUsers();
+  const { getServices, services } = useServices();
+
   useEffect(() => {
-    getBarberServices();
-    getUserServices();
-    getUsers();
-  }, []);
+    // getBarberServices();
+    // getUserServices();
+
+    if (user?.userId) {
+      getServices(user.userId);
+      getUsers();
+    }
+  }, [getServices, getUsers, user]);
 
   return (
     <>
@@ -33,10 +39,10 @@ const Home: NextPage = () => {
       <Container as='section' minH='100%'>
         <Resume services={userServices} />
         <ServiceList
-          services={userServices}
+          services={services}
           isLoadingServices={isLoadingServices}
-          getUserServices={getUserServices}
-          role={user.role}
+          getUserServices={getServices}
+          role={user?.role}
           user={user}
           users={users}
         />

@@ -1,27 +1,21 @@
+import { RequestStatus } from 'src/types/global';
+
 export interface User {
   email: string;
   nit: string;
   fullName?: string;
   role: string;
   phone?: string;
+  userId?: string; //TODO why is this here?
 }
 
 export interface UserState extends User {
-  id: string;
+  uid: string;
 }
 
 export interface AuthState {
   user: UserState | null;
   users: UserState[];
-  token: string;
-  error: string | null;
-  status: 'idle' | 'loading' | 'failed';
+  error: string | null | undefined;
+  status: RequestStatus;
 }
-
-export const initialState: AuthState = {
-  user: null,
-  users: [],
-  token: '',
-  error: null,
-  status: 'idle',
-};

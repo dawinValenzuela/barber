@@ -3,7 +3,7 @@ import { LoginForm } from 'src/components';
 // import { useAuth } from 'context/AuthContext';
 import { useRouter } from 'next/router';
 
-import { useAuth } from 'src/services/userService';
+import { useAuth } from 'src/services/useUsers';
 
 function Login() {
   const { user } = useAuth();

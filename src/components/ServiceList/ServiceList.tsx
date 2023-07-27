@@ -35,7 +35,7 @@ export const ServiceList = ({
     const userId = (event.target as HTMLSelectElement)?.value;
 
     setUserSelected(userId);
-    getUserServices(userId, dateString);
+    // getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {
