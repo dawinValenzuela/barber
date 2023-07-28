@@ -14,7 +14,7 @@ import { sortBy } from 'lodash';
 import { UserFilter, ListItem } from 'src/components';
 
 export const ServiceList = ({
-  services = [],
+  services,
   isLoadingServices = false,
   role,
   user,
@@ -35,7 +35,7 @@ export const ServiceList = ({
     const userId = (event.target as HTMLSelectElement)?.value;
 
     setUserSelected(userId);
-    // getUserServices(userId, dateString);
+    getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {

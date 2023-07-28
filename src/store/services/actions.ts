@@ -1,14 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  QuerySnapshot,
-} from 'firebase/firestore';
-import { db } from '../../../firebase/config';
-import type { ServiceState, Service } from './types';
+import type { ServiceState } from './types';
 import { FirebaseError } from '@firebase/util';
+import axios from 'axios';
 
 export const fetchServices = createAsyncThunk<
   ServiceState[],
@@ -16,8 +9,6 @@ export const fetchServices = createAsyncThunk<
   { rejectValue: string }
 >('services/fetchServices', async ({ userId, date }, thunkAPI) => {
   try {
-    const allServices: ServiceState[] = [];
-
     let dateString = '';
 
     if (date) {
@@ -27,33 +18,10 @@ export const fetchServices = createAsyncThunk<
       dateString = today.toLocaleDateString();
     }
 
-    console.log(userId, date);
-
-    const q = query(
-      collection(db, 'barber-services'),
-      where('userId', '==', userId),
-      where('isDeleted', '==', false),
-      where('date', '==', dateString)
+    const response = await axios.get(
+      `api/user-services/${userId}?date=${dateString}`
     );
-
-    console.log({ q });
-
-    const querySnapshot: QuerySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-      const docData = doc.data() as Service;
-
-      const item: ServiceState = {
-        id: doc.id,
-        ...docData,
-      };
-
-      allServices.push(item);
-    });
-
-    console.log({ allServices });
-
-    return allServices;
+    return response.data as ServiceState[];
   } catch (error) {
     const firebaseError = error as FirebaseError;
     return thunkAPI.rejectWithValue(firebaseError.message);

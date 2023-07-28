@@ -16,23 +16,23 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@chakra-ui/react';
-// import { useAuth } from 'context/AuthContext';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
 import md5 from 'md5';
-import { useAuth } from 'src/services/useUsers';
+import { useUsers } from 'src/services/useUsers';
+import { isEmpty } from 'lodash';
 
 interface FormData {
   email: string;
   password: string;
 }
 
-export const LoginForm = () => {
+export const LoginForm = ({ signIn, router }) => {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
+    setError,
   } = useForm<FormData>({
     defaultValues: {
       email: '',
@@ -40,9 +40,8 @@ export const LoginForm = () => {
     },
   });
 
-  const router = useRouter();
   const toast = useToast();
-  const { handleLogin, error, status } = useAuth();
+  const { status } = useUsers();
 
   const isLoading = status === 'loading';
 
@@ -50,12 +49,31 @@ export const LoginForm = () => {
     // resetPassword('dawin.valenzuela@gmail.com');
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (credentials: FormData) => {
     // N9qNh8TApnD9fvh
-    console.log(data.email, data.password);
-    console.log(data.email, md5(data.password));
-    handleLogin(data);
+    // console.log(data.email, data.password);
+    // console.log(data.email, md5(data.password));
+
+    // handleLogin(data);
+    try {
+      const { status, ok } = await signIn('google-credentials', {
+        redirect: false,
+        ...credentials,
+      });
+
+      if (ok) {
+        router.push('/');
+      } else {
+        setError('root.serverError', {
+          type: status,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const isInvalid = !isEmpty(errors);
 
   return (
     <Flex minH='100vh' align='center' justify='center'>
@@ -65,7 +83,7 @@ export const LoginForm = () => {
             <Heading size={{ base: 'sm' }}>Inicio de Sesion</Heading>
           </Stack>
         </Stack>
-        {error && (
+        {isInvalid && (
           <Alert status='error'>
             <AlertIcon />
             <AlertTitle>Usuario y/o contraseña incorrectos</AlertTitle>

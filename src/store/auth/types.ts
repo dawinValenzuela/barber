@@ -14,7 +14,6 @@ export interface UserState extends User {
 }
 
 export interface AuthState {
-  user: UserState | null;
   users: UserState[];
   error: string | null | undefined;
   status: RequestStatus;

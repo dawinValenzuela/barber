@@ -1,23 +1,11 @@
-import { useEffect } from 'react';
 import { LoginForm } from 'src/components';
-// import { useAuth } from 'context/AuthContext';
 import { useRouter } from 'next/router';
-
-import { useAuth } from 'src/services/useUsers';
+import { signIn } from 'next-auth/react';
 
 function Login() {
-  const { user } = useAuth();
   const router = useRouter();
 
-  console.log('user', user);
-
-  useEffect(() => {
-    if (user?.id) {
-      router.replace('/');
-    }
-  }, [user, router]);
-
-  return !user && <LoginForm />;
+  return <LoginForm signIn={signIn} router={router} />;
 }
 
 export default Login;
