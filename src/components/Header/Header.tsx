@@ -8,17 +8,17 @@ import {
   Button,
   Avatar,
 } from '@chakra-ui/react';
-// import { useAuth } from 'context/AuthContext';
-import { useAuth } from 'src/services/useUsers';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 export const Header = () => {
-  // const { handleLogout, user } = useAuth();
+  const { data: sessionData } = useSession();
+
+  const userData = sessionData.user.data;
+  const { fullName, role } = userData;
 
   const handleLogout = () => {};
   const user = {};
-
-  console.log('user', user);
 
   return (
     <Flex
@@ -35,7 +35,7 @@ export const Header = () => {
         justifyContent='space-between'
         width='full'
       >
-        <Heading size='lg'>{user?.fullName}</Heading>
+        <Heading size='lg'>{fullName}</Heading>
         <Menu>
           <MenuButton
             as={Button}
@@ -44,21 +44,16 @@ export const Header = () => {
             cursor={'pointer'}
             minW={0}
           >
-            <Avatar
-              name={user?.fullName}
-              size='md'
-              bg='gray.700'
-              color='white'
-            />
+            <Avatar name={fullName} size='md' bg='gray.700' color='white' />
           </MenuButton>
           <MenuList zIndex={10}>
             <MenuItem onClick={handleLogout}>Cerrar sesion</MenuItem>
-            {user?.role === 'owner' && (
+            {role === 'owner' && (
               <Link href='/users/add'>
                 <MenuItem>Crear usuario</MenuItem>
               </Link>
             )}
-            {user?.role === 'owner' && (
+            {role === 'owner' && (
               <Link href='/report'>
                 <MenuItem>Reporte</MenuItem>
               </Link>

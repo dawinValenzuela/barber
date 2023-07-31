@@ -3,12 +3,14 @@ import React from 'react';
 import { AddIcon } from '@chakra-ui/icons';
 import { MdContentCut, MdHome, MdCalendarViewMonth } from 'react-icons/md';
 import Link from 'next/link';
-import { useAuth } from 'context/AuthContext';
+import { User } from 'src/types/user';
 
-export const Navbar = () => {
-  const { user } = useAuth();
-  const { role } = user;
+interface NavbarProps {
+  user: User;
+  role: string;
+}
 
+export const Navbar = ({ user, role }) => {
   const isAdmin = role === 'owner' || role === 'admin';
 
   return (
