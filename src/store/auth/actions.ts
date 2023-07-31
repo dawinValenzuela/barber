@@ -3,7 +3,7 @@ import { FirebaseError } from '@firebase/util';
 
 import axios from 'axios';
 
-import type { User, UserState } from './types';
+import type { UserState } from './types';
 
 export const fetchUsers = createAsyncThunk<
   UserState[],

@@ -12,8 +12,19 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import React, { useState } from 'react';
 import { sortBy } from 'lodash';
 import { UserFilter, ListItem } from 'src/components';
+import type { User } from 'src/types/user';
+import type { ServiceState } from 'src/store/services/types';
 
-export const ServiceList = ({
+interface ServiceListProps {
+  services: ServiceState[];
+  isLoadingServices?: boolean;
+  role: string;
+  user: User;
+  users: User[];
+  getUserServices: (userId: string, date: string) => void;
+}
+
+export const ServiceList: React.FC<ServiceListProps> = ({
   services,
   isLoadingServices = false,
   role,
@@ -21,7 +32,7 @@ export const ServiceList = ({
   users = [],
   getUserServices,
 }) => {
-  const [userSelected, setUserSelected] = useState<string>(user?.userId); // just for admin
+  const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
   const [today] = useState(new Date());
   const [dateString, setDateString] = useState(today.toLocaleDateString());
 

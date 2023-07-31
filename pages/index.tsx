@@ -9,25 +9,24 @@ import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
 const Home: NextPage = () => {
-  // const { getBarberServices, getUserServices, userServices } = useAuth();
-
   const { data: sessionData, status: sessionStatus } = useSession();
   const { users, getUsers } = useUsers();
   const { getServices, services, status } = useServices();
 
   useEffect(() => {
-    if (sessionData?.user?.data?.userId) {
-      getServices(sessionData?.user?.data?.userId);
+    if (sessionData?.user.data.userId) {
+      console.log('entra');
+      getServices(sessionData.user.data.userId);
       getUsers();
     }
-  }, [getServices, getUsers, sessionData]);
+  }, [getServices, getUsers, sessionData?.user.data.userId]);
 
-  if (sessionStatus === 'loading') return <div>Loading...</div>;
-
-  console.log({ sessionData, users, services });
+  if (sessionStatus === 'loading' || sessionData === null)
+    return <div>Loading...</div>;
 
   const isLoadingServices = status === 'loading';
-  const role = sessionData?.user?.data?.role;
+  const userData = sessionData.user.data;
+  const role = userData.role;
 
   return (
     <>
@@ -58,8 +57,6 @@ export default Home;
 export async function getServerSideProps(context) {
   const { req, res } = context;
   const session = await getServerSession(req, res);
-
-  console.log({ session });
 
   if (!session) {
     return {

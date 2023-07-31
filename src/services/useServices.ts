@@ -8,7 +8,6 @@ export const useServices = () => {
 
   const getServices = useCallback(
     (userId: string, date?: string) => {
-      console.log('getServices', userId, date);
       dispatch(fetchServices({ userId, date }));
     },
     [dispatch]
