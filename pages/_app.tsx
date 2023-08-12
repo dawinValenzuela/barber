@@ -3,18 +3,19 @@ import type { AppProps } from 'next/app';
 import { ChakraProvider } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { ProtectedRoute } from 'src/components/ProtectedRoute';
-import { Layout } from 'src/components';
 import { Provider } from 'react-redux';
 import { store } from 'src/store';
 import { SessionProvider } from 'next-auth/react';
+import { Layout } from 'src/components';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  const router = useRouter();
   return (
     <SessionProvider session={session}>
       <ChakraProvider>
         <Provider store={store}>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Provider>
       </ChakraProvider>
     </SessionProvider>

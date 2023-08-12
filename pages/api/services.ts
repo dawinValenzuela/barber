@@ -62,7 +62,6 @@ export default async function handler(
         total: allServices.length,
       });
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: 'Internal server error' });
     }
   } else {

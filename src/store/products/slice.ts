@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, fetchCategories, fetchSuppliers } from './actions';
+import { fetchProducts, fetchSuppliers } from './actions';
+import type { ProductsState } from './types';
 
-const initialState = {
+const initialState: ProductsState = {
   products: [],
-  categories: [],
   suppliers: [],
   status: 'idle',
   error: null,
@@ -31,18 +31,6 @@ export const productsSlice = createSlice({
         state.status = 'failed';
       });
     builder
-      .addCase(fetchCategories.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.categories = action.payload;
-        state.status = 'idle';
-      })
-      .addCase(fetchCategories.rejected, (state, action) => {
-        state.error = action.payload;
-        state.status = 'failed';
-      });
-    builder
       .addCase(fetchSuppliers.pending, (state) => {
         state.status = 'loading';
       })
@@ -56,3 +44,6 @@ export const productsSlice = createSlice({
       });
   },
 });
+
+export const { clearProducts } = productsSlice.actions;
+export default productsSlice.reducer;

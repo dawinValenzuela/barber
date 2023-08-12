@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useAuth } from 'context/AuthContext';
+import React from 'react';
 import {
   Table,
   Thead,
@@ -11,25 +10,13 @@ import {
   VStack,
   Heading,
 } from '@chakra-ui/react';
+import type { Product } from 'src/types/product';
 
-export const ProductList = () => {
-  const { getProducts, products, getSuppliers, suppliers } = useAuth();
+interface ProductListProps {
+  products: Product[];
+}
 
-  useEffect(() => {
-    getProducts();
-    getSuppliers();
-  }, []);
-
-  const productsWithSuppliers = products?.map((product) => {
-    const supplier = suppliers?.find(
-      (supplier) => supplier.id === product.supplierId
-    );
-    return {
-      ...product,
-      supplierName: supplier?.name,
-    };
-  });
-
+export const ProductList = ({ products }: ProductListProps) => {
   return (
     <VStack align='stretch' px={4} mt={7} spacing={8}>
       <Heading textAlign='center'>Listado de Productos</Heading>
@@ -43,10 +30,10 @@ export const ProductList = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {productsWithSuppliers?.map((product) => (
+            {products?.map((product) => (
               <Tr key={product.id}>
                 <Td>{product.name}</Td>
-                <Td>{product.supplierName}</Td>
+                <Td>{product.supplier.name}</Td>
                 <Td isNumeric>${product.value}</Td>
               </Tr>
             ))}

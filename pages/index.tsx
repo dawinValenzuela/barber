@@ -6,9 +6,8 @@ import { useServices } from 'src/services/useServices';
 import { useUsers } from 'src/services/useUsers';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
-import { Layout } from 'src/components';
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ prueba = 'test' }) => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { users, getUsers } = useUsers();
   const { getServices, resetServices, services, status } = useServices();
@@ -35,35 +34,18 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Layout>
-        <Resume services={services} />
-        <ServiceList
-          services={services}
-          isLoadingServices={isLoadingServices}
-          getUserServices={getServices}
-          role={role}
-          user={sessionData?.user?.data}
-          users={users}
-        />
-      </Layout>
+      <Resume services={services} />
+      <ServiceList
+        services={services}
+        isLoadingServices={isLoadingServices}
+        getUserServices={getServices}
+        role={role}
+        user={sessionData?.user?.data}
+        users={users}
+      />
       <Navbar user={sessionData?.user?.data} role={role} />
     </>
   );
 };
 
 export default Home;
-
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const session = await getServerSession(req, res);
-
-  if (!session) {
-    return {
-      redirect: { destination: '/login' },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}

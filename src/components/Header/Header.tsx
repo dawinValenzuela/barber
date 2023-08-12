@@ -9,15 +9,16 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export const Header = () => {
   const { data: sessionData } = useSession();
 
+  if (!sessionData) return null;
+
   const userData = sessionData.user.data;
   const { fullName, role } = userData;
 
-  const handleLogout = () => {};
   const user = {};
 
   return (
@@ -47,7 +48,16 @@ export const Header = () => {
             <Avatar name={fullName} size='md' bg='gray.700' color='white' />
           </MenuButton>
           <MenuList zIndex={10}>
-            <MenuItem onClick={handleLogout}>Cerrar sesion</MenuItem>
+            {/* <MenuItem onClick={() => signOut()}>Cerrar sesion</MenuItem> */}
+            <Link
+              href='/api/auth/signout'
+              onClick={(e) => {
+                e.preventDefault();
+                signOut({ callbackUrl: '/login' });
+              }}
+            >
+              <MenuItem>Cerrar sesion</MenuItem>
+            </Link>
             {role === 'owner' && (
               <Link href='/users/add'>
                 <MenuItem>Crear usuario</MenuItem>
@@ -56,6 +66,11 @@ export const Header = () => {
             {role === 'owner' && (
               <Link href='/report'>
                 <MenuItem>Reporte</MenuItem>
+              </Link>
+            )}
+            {role === 'owner' && (
+              <Link href='/products'>
+                <MenuItem>Productos</MenuItem>
               </Link>
             )}
           </MenuList>
