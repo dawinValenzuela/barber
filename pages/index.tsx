@@ -11,15 +11,20 @@ import { Layout } from 'src/components';
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { users, getUsers } = useUsers();
-  const { getServices, services, status } = useServices();
+  const { getServices, resetServices, services, status } = useServices();
 
   useEffect(() => {
     if (sessionData?.user.data.userId) {
-      console.log('entra');
       getServices(sessionData.user.data.userId);
       getUsers();
     }
   }, [getServices, getUsers, sessionData?.user.data.userId]);
+
+  useEffect(() => {
+    return () => {
+      resetServices();
+    };
+  }, [resetServices]);
 
   if (sessionStatus === 'loading' || sessionData === null)
     return <div>Loading...</div>;
@@ -30,7 +35,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      {/* <Container as='section' minH='100%'> */}
       <Layout>
         <Resume services={services} />
         <ServiceList
@@ -42,7 +46,6 @@ const Home: NextPage = () => {
           users={users}
         />
       </Layout>
-      {/* </Container> */}
       <Navbar user={sessionData?.user?.data} role={role} />
     </>
   );

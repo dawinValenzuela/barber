@@ -9,6 +9,10 @@ export interface ServiceState extends Service {
 
 export interface ServicesState {
   services: ServiceState[];
+  reportServices: {
+    services: ServiceState[];
+    total: number;
+  };
   status: RequestStatus;
   error: string | null | undefined;
 }

@@ -4,10 +4,7 @@ export interface Service {
   notes?: string;
   paymentMethod: string;
   createdBy: string;
-  createdAt: {
-    seconds: number;
-    nanoseconds: number;
-  };
+  createdAt: string;
   date?: string;
   hour?: string;
   isDeleted?: boolean;

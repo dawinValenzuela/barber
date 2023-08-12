@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { ServicesState } from './types';
-import { fetchServices } from './actions';
+import { fetchServices, fetchAllServices } from './actions';
 
 const initialState: ServicesState = {
   services: [],
+  reportServices: [],
   status: 'idle',
   error: null,
 };
@@ -11,7 +12,11 @@ const initialState: ServicesState = {
 export const servicesSlice = createSlice({
   name: 'services',
   initialState,
-  reducers: {},
+  reducers: {
+    clearServices: () => {
+      return initialState;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchServices.pending, (state) => {
@@ -25,7 +30,20 @@ export const servicesSlice = createSlice({
         state.error = action.payload;
         state.status = 'failed';
       });
+    builder
+      .addCase(fetchAllServices.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchAllServices.fulfilled, (state, action) => {
+        state.reportServices = action.payload;
+        state.status = 'idle';
+      })
+      .addCase(fetchAllServices.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+      });
   },
 });
 
+export const { clearServices } = servicesSlice.actions;
 export default servicesSlice.reducer;

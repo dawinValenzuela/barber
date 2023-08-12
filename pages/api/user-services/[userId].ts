@@ -24,8 +24,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       dateString = today.toLocaleDateString();
     }
 
-    console.log('dateString', dateString, userId);
-
     const q = query(
       collection(db, 'barber-services'),
       where('userId', '==', userId),

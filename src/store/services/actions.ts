@@ -27,3 +27,20 @@ export const fetchServices = createAsyncThunk<
     return thunkAPI.rejectWithValue(firebaseError.message);
   }
 });
+
+export const fetchAllServices = createAsyncThunk<
+  ServiceState[],
+  { month?: number },
+  { rejectValue: string }
+>('services/fetchAllServices', async ({ month }, thunkAPI) => {
+  try {
+    const response = await axios.get(`api/services?month=${month}`);
+    return {
+      services: response.data.services as ServiceState[],
+      total: response.data.total as number,
+    };
+  } catch (error) {
+    const firebaseError = error as FirebaseError;
+    return thunkAPI.rejectWithValue(firebaseError.message);
+  }
+});

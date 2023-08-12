@@ -18,39 +18,49 @@ import {
   FormLabel,
   Button,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
 import React, { useEffect, useState } from 'react';
 import _groupBy from 'lodash/groupBy';
 import _find from 'lodash/find';
 import _filter from 'lodash/filter';
 import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
+import { useServices } from 'src/services/useServices';
+import { useUsers } from 'src/services/useUsers';
+import { Timestamp } from 'firebase/firestore';
 
 export const Report = () => {
   const [initialDate, setInitialDate] = useState<string>('');
   const [finalDate, setFinalDate] = useState<string>('');
 
-  const {
-    user,
-    getAllServices,
-    reportServices,
-    users,
-    getUsers,
-    getAllOutputs,
-    outputs,
-  } = useAuth();
+  const { getReportServices, reportServices, status } = useServices();
+  const { users } = useUsers();
+
+  const { services } = reportServices;
+
+  // const {
+  //   user,
+  //   getAllServices,
+  //   reportServices,
+  //   users,
+  //   getUsers,
+  //   getAllOutputs,
+  //   outputs,
+  // } = useAuth();
+
+  const isLoading = status === 'loading';
 
   useEffect(() => {
-    getUsers();
-    getAllServices();
-    getAllOutputs();
-  }, []);
+    getReportServices();
+    // getAllOutputs();
+  }, [getReportServices]);
 
-  const groupedServices = _groupBy(reportServices, 'userId') || [];
+  if (isLoading) return <div>Loading...</div>;
+
+  const groupedServices = _groupBy(services, 'userId') || [];
 
   // group all the services by date formated as DD-MM-YYYY
-  const groupedServicesByDate = _groupBy(reportServices, (service) => {
-    const date = service.createdAt.toDate();
+  const groupedServicesByDate = _groupBy(services, (service) => {
+    const date = new Date(service.createdAt);
 
     return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   });
@@ -78,7 +88,7 @@ export const Report = () => {
   );
 
   const filteredFreeServices = _filter(
-    reportServices,
+    services,
     (service) => service.name !== 'corte gratis'
   );
 
@@ -94,10 +104,10 @@ export const Report = () => {
     0
   );
 
-  // sum all the values from the outputs
-  const totalOutputs = outputs?.reduce((previousValue, currentValue) => {
-    return previousValue + Number(currentValue.value);
-  }, 0);
+  // // sum all the values from the outputs
+  // const totalOutputs = outputs?.reduce((previousValue, currentValue) => {
+  //   return previousValue + Number(currentValue.value);
+  // }, 0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -115,8 +125,8 @@ export const Report = () => {
   };
 
   const handleSearch = () => {
-    getAllServices(initialDate, finalDate);
-    getAllOutputs(initialDate, finalDate);
+    // getAllServices(initialDate, finalDate);
+    // getAllOutputs(initialDate, finalDate);
   };
 
   return (
@@ -224,7 +234,7 @@ export const Report = () => {
           </Text>
         </Link> */}
         </VStack>
-        <VStack mt={7} spacing={5} align='stretch' px={4}>
+        {/* <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte salidas</Heading>
           <TableContainer>
             <Table variant='simple'>
@@ -266,7 +276,7 @@ export const Report = () => {
               <ChakraLink>Regresar al home</ChakraLink>
             </Text>
           </Link>
-        </VStack>
+        </VStack> */}
       </Container>
     </>
   );
