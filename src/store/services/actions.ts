@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import type { ServiceState } from './types';
+import type { ServiceState, BarberService } from './types';
 import { FirebaseError } from '@firebase/util';
 import axios from 'axios';
 
@@ -39,6 +39,20 @@ export const fetchAllServices = createAsyncThunk<
       services: response.data.services as ServiceState[],
       total: response.data.total as number,
     };
+  } catch (error) {
+    const firebaseError = error as FirebaseError;
+    return thunkAPI.rejectWithValue(firebaseError.message);
+  }
+});
+
+export const fetchBarberServices = createAsyncThunk<
+  BarberService[],
+  void,
+  { rejectValue: string }
+>('services/fetchBarberServices', async (_, thunkAPI) => {
+  try {
+    const response = await axios.get('/api/barber-services');
+    return response.data as BarberService[];
   } catch (error) {
     const firebaseError = error as FirebaseError;
     return thunkAPI.rejectWithValue(firebaseError.message);

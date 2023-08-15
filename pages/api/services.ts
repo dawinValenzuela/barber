@@ -31,11 +31,6 @@ export default async function handler(
       initialDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
 
-      // console.log({
-      //   initial: initialDate.toLocaleDateString(),
-      //   end: endDate.toLocaleDateString(),
-      // });
-
       const q = query(
         collection(db, 'barber-services'),
         where('createdAt', '>=', initialDate),

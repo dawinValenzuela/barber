@@ -1,10 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
 import type { ServicesState } from './types';
-import { fetchServices, fetchAllServices } from './actions';
+import {
+  fetchServices,
+  fetchAllServices,
+  fetchBarberServices,
+} from './actions';
 
 const initialState: ServicesState = {
   services: [],
-  reportServices: [],
+  barberServices: [],
+  reportServices: {
+    services: [],
+    total: 0,
+  },
   status: 'idle',
   error: null,
 };
@@ -42,8 +52,31 @@ export const servicesSlice = createSlice({
         state.error = action.payload;
         state.status = 'failed';
       });
+    builder
+      .addCase(fetchBarberServices.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchBarberServices.fulfilled, (state, action) => {
+        state.barberServices = action.payload?.services;
+        state.status = 'idle';
+      })
+      .addCase(fetchBarberServices.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = 'failed';
+      });
   },
 });
 
 export const { clearServices } = servicesSlice.actions;
 export default servicesSlice.reducer;
+
+export const servicesApi = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: '' }),
+  endpoints: (builder) => ({
+    getBarberServices: builder.query({
+      query: () => '/api/barber-services',
+    }),
+  }),
+});
+
+export const { useGetBarberServicesQuery } = servicesApi;

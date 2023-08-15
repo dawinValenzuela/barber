@@ -1,9 +1,20 @@
 import { useAppSelector, useAppDispatch } from './store';
-import { fetchServices, fetchAllServices } from 'src/store/services/actions';
+import {
+  fetchServices,
+  fetchAllServices,
+  fetchBarberServices,
+} from 'src/store/services/actions';
 import { useCallback } from 'react';
 import { clearServices } from 'src/store/services/slice';
+import { useGetBarberServicesQuery } from 'src/store/services/slice';
 
 export const useServices = () => {
+  const {
+    data: barberServices,
+    isFetching,
+    isLoading,
+  } = useGetBarberServicesQuery();
+
   const dispatch = useAppDispatch();
   const { services, status, error, reportServices } = useAppSelector(
     (state) => state.services
@@ -32,6 +43,7 @@ export const useServices = () => {
     status,
     error,
     reportServices,
+    barberServices,
     getServices,
     resetServices,
     getReportServices,
