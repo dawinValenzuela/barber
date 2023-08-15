@@ -2,7 +2,8 @@ import { LoginForm } from 'src/components';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import { getServerSession } from 'next-auth';
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import { GetServerSidePropsContext } from 'next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 function Login() {
   const router = useRouter();
@@ -13,7 +14,8 @@ export default Login;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { req, res } = context;
-  const session = await getServerSession(req, res);
+
+  const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
     return {

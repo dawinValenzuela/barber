@@ -12,7 +12,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Header />
-      <Container as='section' minH='100%'>
+      <Container as='section' minH='100%' maxW='container.lg'>
         {children}
       </Container>
     </>

@@ -7,7 +7,7 @@ import { useUsers } from 'src/services/useUsers';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
-const Home: NextPage = ({ prueba = 'test' }) => {
+const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { users, getUsers } = useUsers();
   const { getServices, resetServices, services, status } = useServices();

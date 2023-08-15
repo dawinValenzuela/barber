@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../firebase/config';
 
-const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: 'google-credentials',
@@ -61,4 +61,4 @@ const options: NextAuthOptions = {
   },
 };
 
-export default NextAuth(options);
+export default NextAuth(authOptions);
