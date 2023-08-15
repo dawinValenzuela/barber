@@ -36,9 +36,8 @@ export default async function handler(
             ...docData,
             id: document.id,
             createdAt: docData.createdAt.toDate().toLocaleString(),
-            supplier: {
-              name: supplierData?.name,
-            },
+            supplier: supplierData?.name,
+            stock: 0,
           } as Product;
 
           allProducts.push(product);

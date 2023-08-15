@@ -10,9 +10,8 @@ export interface Product {
   suplierId: string;
   category?: string;
   createdAt: string;
-  supplier: {
-    name: string;
-  };
+  supplier: string;
+  stock?: number;
 }
 
 export interface Supplier {
