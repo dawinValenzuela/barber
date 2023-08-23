@@ -13,8 +13,6 @@ import { useTable } from './useTable';
 export const Table = ({ columns, data = [] }) => {
   const tableInstance = useTable({ columns, data });
 
-  console.log(tableInstance, data);
-
   const { getHeaderGroups, getRowModel } = tableInstance;
 
   return (

@@ -18,16 +18,16 @@ const ProductsPage: NextPage = () => {
 
 export default ProductsPage;
 
-// export async function getServerSideProps(context: GetServerSidePropsContext) {
-//   const session = await getServerSession(context.req, context.res, authOptions);
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
 
-//   if (!session) {
-//     return {
-//       redirect: { destination: '/login' },
-//     };
-//   }
+  if (!session) {
+    return {
+      redirect: { destination: '/login' },
+    };
+  }
 
-//   return {
-//     props: {},
-//   };
-// }
+  return {
+    props: {},
+  };
+}
