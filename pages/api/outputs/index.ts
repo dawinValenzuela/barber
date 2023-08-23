@@ -31,8 +31,6 @@ export default async function handler(
       initialDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
 
-      console.log(initialDate, endDate);
-
       const q = query(
         collection(db, 'outputs'),
         where('createdAt', '>=', initialDate),
@@ -73,8 +71,6 @@ export default async function handler(
         createdAt: today,
         idDeleted: false,
       });
-
-      console.log('Document written with ID: ', docRef.id);
 
       res.status(200).json({ message: 'Output created successfully' });
     } catch (error) {

@@ -166,8 +166,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     let dateString = '';
 
-    console.log(date, 'date');
-
     if (date) {
       dateString = date;
     } else {
@@ -238,7 +236,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     const now = new Date();
 
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    // console.log(firstDay);
 
     const lastDay = new Date(
       now.getFullYear(),
@@ -249,7 +246,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       59,
       999
     );
-    // console.log(lastDay);
 
     const q = query(
       collection(db, 'barber-services'),
@@ -292,7 +288,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       lastDay.setHours(23, 59, 59, 999);
     } else {
       const now = new Date();
-      console.log(typeof now, 'type');
       firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
       lastDay = new Date(
         now.getFullYear(),

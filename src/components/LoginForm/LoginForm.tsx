@@ -14,7 +14,6 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import md5 from 'md5';
@@ -50,15 +49,15 @@ export const LoginForm = ({ signIn, router }) => {
   };
 
   const onSubmit = async (credentials: FormData) => {
-    // N9qNh8TApnD9fvh
-    // console.log(data.email, data.password);
-    // console.log(data.email, md5(data.password));
+    const accessData = {
+      email: credentials.email,
+      password: md5(credentials.password),
+    };
 
-    // handleLogin(data);
     try {
       const { status, ok } = await signIn('google-credentials', {
         redirect: false,
-        ...credentials,
+        ...accessData,
       });
 
       if (ok) {

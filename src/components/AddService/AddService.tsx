@@ -41,14 +41,12 @@ const DEFAULT_VALUES = {
 export const AddService = () => {
   const { data: sessionData } = useSession();
   const { users, getUsers } = useUsers();
-  const { barberServices, createService, isCreating } = useServices();
+  const { barberServices, createService } = useServices();
   const toast = useToast();
 
   const formDefaultValues = {
     ...DEFAULT_VALUES,
   };
-
-  console.log(sessionData);
 
   const {
     register,

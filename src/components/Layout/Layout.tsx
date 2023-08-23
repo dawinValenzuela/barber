@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 export const Layout = ({ children }: { children: ReactNode }) => {
   const { data: sessionData } = useSession();
 
-  if (!sessionData) return null;
+  if (!sessionData) return <>{children}</>;
 
   const role = sessionData?.user?.data?.role;
 

@@ -10,8 +10,6 @@ export const useOutputs = () => {
   const selectOutputs = outputsApi.endpoints.getOutputs.select(undefined);
   const outputsData = useAppSelector((state) => selectOutputs(state));
 
-  console.log(outputsData);
-
   const getOutputs = useCallback(
     (month?: number) => {
       dispatch(outputsApi.endpoints.getOutputs.initiate(month));

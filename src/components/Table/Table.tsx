@@ -22,7 +22,6 @@ export const Table = ({ columns, data = [] }) => {
           <Thead key={headerGroup.id}>
             <Tr>
               {headerGroup.headers.map((header) => {
-                console.log({ header });
                 return (
                   <Th key={header.id}>
                     {flexRender(
@@ -37,11 +36,9 @@ export const Table = ({ columns, data = [] }) => {
         ))}
         <Tbody>
           {getRowModel().rows.map((row) => {
-            // console.log({ row });
             return (
               <Tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
-                  console.log({ cell, context: cell.getContext() });
                   return (
                     <Td key={cell.id}>
                       {flexRender(

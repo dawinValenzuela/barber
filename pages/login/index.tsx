@@ -7,14 +7,13 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 function Login() {
   const router = useRouter();
+
   return <LoginForm signIn={signIn} router={router} />;
 }
 
 export default Login;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { req, res } = context;
-
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {

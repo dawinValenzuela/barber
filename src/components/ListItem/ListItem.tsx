@@ -29,7 +29,6 @@ export const ListItem = ({ service, itemNumber, userId, dateSelected }) => {
     : service?.value;
 
   const handleDeleteClick = (id: string) => {
-    console.log(userId, dateSelected);
     deleteService(id)
       .then(() => {
         toast({

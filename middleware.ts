@@ -5,9 +5,6 @@ export default withAuth({
   callbacks: {
     authorized({ req, token }) {
       // `/admin` requires admin role
-      console.log(req.nextUrl.pathname);
-      console.log('token', !!token);
-      // console.log('pathname', req.nextUrl.pathname);
       // if (req.nextUrl.pathname === '/admin') {
       //   return token?.userRole === 'admin';
       // }
@@ -18,5 +15,5 @@ export default withAuth({
 });
 
 export const config = {
-  matcher: ['/products'],
+  matcher: [],
 };
