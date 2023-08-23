@@ -1,14 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { getServerSession } from 'next-auth/next';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../../firebase/config';
 import { ServiceState } from 'src/store/services/types';
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -59,7 +60,40 @@ export default async function handler(
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
     }
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  if (req.method === 'POST') {
+    try {
+      const { service } = req.body;
+
+      const today = new Date();
+      const dateSelected = new Date(service.createdAt);
+
+      const newService = {
+        ...service,
+        value: Number(service.value),
+        createdAt: dateSelected,
+        date: dateSelected
+          ? `${dateSelected.getDate()}/${
+              dateSelected.getMonth() + 1
+            }/${dateSelected.getFullYear()}`
+          : `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`,
+        hour: dateSelected
+          ? dateSelected.toLocaleTimeString()
+          : today.toLocaleTimeString(),
+        isDeleted: false,
+      };
+
+      const createdBy = session.user.data.userId;
+
+      await addDoc(collection(db, 'barber-services'), {
+        ...newService,
+        createdBy,
+      });
+
+      res.status(200).json({ message: 'Service created successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
   }
 }

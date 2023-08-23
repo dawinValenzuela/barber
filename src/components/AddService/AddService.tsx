@@ -41,14 +41,11 @@ const DEFAULT_VALUES = {
 export const AddService = () => {
   const { data: sessionData } = useSession();
   const { users, getUsers } = useUsers();
-  const { barberServices } = useServices();
+  const { barberServices, createService, isCreating } = useServices();
   const toast = useToast();
-
-  console.log(sessionData);
 
   const formDefaultValues = {
     ...DEFAULT_VALUES,
-    // userId: isAdmin ? '' : user.uid,
   };
 
   const {
@@ -90,10 +87,8 @@ export const AddService = () => {
   const isAdmin = user.data.role === 'owner' || user.data.role === 'admin';
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
     try {
-      // await addService(data);
-      // reset(formDefaultValues);
+      await createService(data).unwrap();
       toast({
         title: 'Muy bien',
         description: 'El servicio se ha guardado correctamente',
@@ -101,7 +96,7 @@ export const AddService = () => {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Ah ocurrido un error',
         description: 'Error al guardar el servicio',

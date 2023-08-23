@@ -6,14 +6,18 @@ import {
 } from 'src/store/services/actions';
 import { useCallback } from 'react';
 import { clearServices } from 'src/store/services/slice';
-import { useGetBarberServicesQuery } from 'src/store/services/slice';
+import {
+  useGetBarberServicesQuery,
+  useCreateServiceMutation,
+  useDeleteServiceMutation,
+} from 'src/store/services/slice';
 
 export const useServices = () => {
-  const {
-    data: barberServices,
-    isFetching,
-    isLoading,
-  } = useGetBarberServicesQuery();
+  const { data: barberServices } = useGetBarberServicesQuery();
+
+  const [createService] = useCreateServiceMutation();
+
+  const [deleteService] = useDeleteServiceMutation();
 
   const dispatch = useAppDispatch();
   const { services, status, error, reportServices } = useAppSelector(
@@ -47,5 +51,7 @@ export const useServices = () => {
     getServices,
     resetServices,
     getReportServices,
+    createService,
+    deleteService,
   };
 };

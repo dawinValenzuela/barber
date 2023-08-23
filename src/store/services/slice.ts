@@ -76,7 +76,26 @@ export const servicesApi = createApi({
     getBarberServices: builder.query({
       query: () => '/api/barber-services',
     }),
+    createService: builder.mutation({
+      query: (newService) => ({
+        url: '/api/services',
+        method: 'post',
+        body: {
+          service: newService,
+        },
+      }),
+    }),
+    deleteService: builder.mutation({
+      query: (id) => ({
+        url: `/api/services/${id}`,
+        method: 'delete',
+      }),
+    }),
   }),
 });
 
-export const { useGetBarberServicesQuery } = servicesApi;
+export const {
+  useGetBarberServicesQuery,
+  useCreateServiceMutation,
+  useDeleteServiceMutation,
+} = servicesApi;

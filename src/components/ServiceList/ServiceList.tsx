@@ -105,9 +105,13 @@ export const ServiceList: React.FC<ServiceListProps> = ({
         )}
         {!isLoadingServices &&
           sortedData?.map((service, key) => (
-            <>
-              <ListItem key={key} service={service} itemNumber={key + 1} />
-            </>
+            <ListItem
+              key={key}
+              service={service}
+              itemNumber={key + 1}
+              userId={userSelected}
+              dateSelected={dateString}
+            />
           ))}
       </Box>
     </Box>
