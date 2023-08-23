@@ -1,9 +1,17 @@
 import React, { ReactNode } from 'react';
-import { Container } from '@chakra-ui/react';
+import { Container, Box } from '@chakra-ui/react';
 import { Header } from '../Header';
 import Head from 'next/head';
+import { Navbar } from 'src/components';
+import { useSession } from 'next-auth/react';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
+  const { data: sessionData } = useSession();
+
+  if (!sessionData) return null;
+
+  const role = sessionData?.user?.data?.role;
+
   return (
     <>
       <Head>
@@ -14,6 +22,9 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       <Header />
       <Container as='section' minH='100%' maxW='container.lg'>
         {children}
+        <Box mt={8}>
+          <Navbar user={sessionData?.user?.data} role={role} />
+        </Box>
       </Container>
     </>
   );

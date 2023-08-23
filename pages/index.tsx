@@ -44,7 +44,7 @@ const Home: NextPage = () => {
         user={sessionData?.user?.data}
         users={users}
       />
-      <Navbar user={sessionData?.user?.data} role={role} />
+      {/* <Navbar user={sessionData?.user?.data} role={role} /> */}
     </>
   );
 };
