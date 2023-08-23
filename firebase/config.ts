@@ -3,13 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBKDHigJUrZD8MWTiTNg6Vf9IdfGHfDzO0',
-  authDomain: 'barber-baead.firebaseapp.com',
-  projectId: 'barber-baead',
-  storageBucket: 'barber-baead.appspot.com',
-  messagingSenderId: '1049123993935',
-  appId: '1:1049123993935:web:3fdb03ad9246285d506d3a',
-  measurementId: 'G-E7JDSNKDWR',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID,
 };
 
 // Initialize Firebase

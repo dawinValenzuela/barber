@@ -17,3 +17,5 @@ export * from './Report';
 export * from './Suppliers';
 export * from './Primitives';
 export * from './Outputs';
+export * from './ProductList';
+export * from './Table';

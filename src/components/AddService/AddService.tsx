@@ -21,32 +21,31 @@ import {
   Text,
   Input,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
 import { FormData, Option, Service, User } from './types';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useUsers } from 'src/services/useUsers';
+import { useServices } from 'src/services/useServices';
 
 const DEFAULT_VALUES = {
   serviceId: '',
   name: '',
   value: 0,
   userId: '',
-  createdBy: '',
   createdAt: '',
   paymentMethod: 'cash',
   notes: '',
 };
 
 export const AddService = () => {
-  const { services, user, users, addService } = useAuth();
+  const { data: sessionData } = useSession();
+  const { users, getUsers } = useUsers();
+  const { barberServices, createService } = useServices();
   const toast = useToast();
-
-  const isAdmin = user.role === 'owner' || user.role === 'admin';
 
   const formDefaultValues = {
     ...DEFAULT_VALUES,
-    createdBy: user.uid,
-    userId: isAdmin ? '' : user.uid,
   };
 
   const {
@@ -61,11 +60,15 @@ export const AddService = () => {
     defaultValues: formDefaultValues,
   });
 
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
+
   const serviceSelected = watch('serviceId');
 
   useEffect(() => {
     if (serviceSelected) {
-      const service = services.find(
+      const service = barberServices.find(
         (service: Service) => service.id === serviceSelected
       );
       setValue('value', service.value);
@@ -74,12 +77,23 @@ export const AddService = () => {
       setValue('value', 0);
       setValue('name', '');
     }
-  }, [serviceSelected, services, setValue]);
+  }, [serviceSelected, barberServices, setValue]);
+
+  if (!sessionData) {
+    return null;
+  }
+
+  const user = sessionData?.user;
+  const isAdmin = user.data.role === 'owner' || user.data.role === 'admin';
 
   const onSubmit = async (data: FormData) => {
+    if (!isAdmin) {
+      data.userId = user.data.userId;
+      data.createdAt = new Date().toISOString();
+    }
+
     try {
-      await addService(data);
-      // reset(formDefaultValues);
+      await createService(data).unwrap();
       toast({
         title: 'Muy bien',
         description: 'El servicio se ha guardado correctamente',
@@ -87,7 +101,7 @@ export const AddService = () => {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Ah ocurrido un error',
         description: 'Error al guardar el servicio',
@@ -118,7 +132,7 @@ export const AddService = () => {
                         {...field}
                         isDisabled={isSubmitting}
                       >
-                        {users?.map((option: User) => {
+                        {users?.map((option) => {
                           return (
                             <option key={option.userId} value={option.userId}>
                               {option.fullName}
@@ -133,9 +147,19 @@ export const AddService = () => {
                   <FormErrorMessage>{errors?.userId?.message}</FormErrorMessage>
                 )}
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={!!errors?.createdAt}>
                 <FormLabel>Fecha del servicio</FormLabel>
-                <Input type='datetime-local' {...register('createdAt')} />
+                <Input
+                  type='datetime-local'
+                  {...register('createdAt', {
+                    required: 'Debe seleccionar una fecha',
+                  })}
+                />
+                {errors?.createdAt && (
+                  <FormErrorMessage>
+                    {errors?.createdAt?.message}
+                  </FormErrorMessage>
+                )}
               </FormControl>
             </>
           )}
@@ -152,7 +176,7 @@ export const AddService = () => {
                     {...field}
                     isDisabled={isSubmitting}
                   >
-                    {services?.map((option: Option) => {
+                    {barberServices?.map((option: Option) => {
                       return (
                         <option key={option.id} value={option.id}>
                           {option.name}
@@ -172,7 +196,14 @@ export const AddService = () => {
             <Controller
               control={control}
               name='value'
-              rules={{ required: 'El valor del servicio es obligatorio' }}
+              // Value must be greater than 0 and is required
+              rules={{
+                required: 'El valor del servicio es obligatorio',
+                min: {
+                  value: 1,
+                  message: 'El valor del servicio debe ser mayor a 0',
+                },
+              }}
               render={({ field }) => {
                 return (
                   <NumberInput step={1000} {...field} isDisabled={isSubmitting}>
@@ -215,11 +246,11 @@ export const AddService = () => {
           </Button>
         </Stack>
       </form>
-      <Link href='/'>
+      {/* <Link href='/'>
         <Text textAlign='center' fontSize='xl'>
           <ChakraLink>Regresar al listado de servicios</ChakraLink>
         </Text>
-      </Link>
+      </Link> */}
     </VStack>
   );
 };

@@ -11,23 +11,27 @@ import {
   Checkbox,
   FormErrorMessage,
   useToast,
+  Alert,
+  AlertIcon,
+  AlertTitle,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
 import md5 from 'md5';
+import { useUsers } from 'src/services/useUsers';
+import { isEmpty } from 'lodash';
 
 interface FormData {
   email: string;
   password: string;
 }
 
-export const LoginForm = () => {
+export const LoginForm = ({ signIn, router }) => {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
+    setError,
   } = useForm<FormData>({
     defaultValues: {
       email: '',
@@ -35,31 +39,40 @@ export const LoginForm = () => {
     },
   });
 
-  const router = useRouter();
   const toast = useToast();
-  const { login, resetPassword } = useAuth();
+  const { status } = useUsers();
+
+  const isLoading = status === 'loading';
 
   const handleReset = () => {
-    resetPassword('dawin.valenzuela@gmail.com');
+    // resetPassword('dawin.valenzuela@gmail.com');
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (credentials: FormData) => {
+    const accessData = {
+      email: credentials.email,
+      password: md5(credentials.password),
+    };
+
     try {
-      // N9qNh8TApnD9fvh
-      console.log(data.email, data.password);
-      console.log(data.email, md5(data.password));
-      await login(data.email, data.password);
-      router.replace('/');
-    } catch (error) {
-      toast({
-        title: 'Ah ocurrido un error',
-        description: 'Usuario y/o contraseña incorrectos',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
+      const { status, ok } = await signIn('google-credentials', {
+        redirect: false,
+        ...accessData,
       });
+
+      if (ok) {
+        router.push('/');
+      } else {
+        setError('root.serverError', {
+          type: status,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const isInvalid = !isEmpty(errors);
 
   return (
     <Flex minH='100vh' align='center' justify='center'>
@@ -69,6 +82,12 @@ export const LoginForm = () => {
             <Heading size={{ base: 'sm' }}>Inicio de Sesion</Heading>
           </Stack>
         </Stack>
+        {isInvalid && (
+          <Alert status='error'>
+            <AlertIcon />
+            <AlertTitle>Usuario y/o contraseña incorrectos</AlertTitle>
+          </Alert>
+        )}
         <Box
           py={{ base: '8', sm: '8' }}
           px={{ base: '8', sm: '10' }}
@@ -90,6 +109,7 @@ export const LoginForm = () => {
                     {...register('email', {
                       required: 'El email es obligatorio',
                     })}
+                    isDisabled={isLoading}
                   />
                   {errors?.email && (
                     <FormErrorMessage>
@@ -105,6 +125,7 @@ export const LoginForm = () => {
                     {...register('password', {
                       required: 'la contraseña es obligatoria',
                     })}
+                    isDisabled={isLoading}
                   />
                   {errors?.password && (
                     <FormErrorMessage>
@@ -116,7 +137,12 @@ export const LoginForm = () => {
                   <Checkbox defaultChecked>Recordar contraseña</Checkbox>
                 </HStack>
                 <Stack spacing='6'>
-                  <Button variant='solid' colorScheme='blue' type='submit'>
+                  <Button
+                    variant='solid'
+                    colorScheme='blue'
+                    type='submit'
+                    isDisabled={isLoading}
+                  >
                     Iniciar sessión
                   </Button>
                 </Stack>
@@ -126,6 +152,7 @@ export const LoginForm = () => {
                     variant='outline'
                     colorScheme='gray'
                     onClick={handleReset}
+                    isDisabled={isLoading}
                   >
                     Recuperar contraseña
                   </Button>

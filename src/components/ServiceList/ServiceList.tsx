@@ -12,16 +12,27 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import React, { useState } from 'react';
 import { sortBy } from 'lodash';
 import { UserFilter, ListItem } from 'src/components';
+import type { User } from 'src/types/user';
+import type { ServiceState } from 'src/store/services/types';
 
-export const ServiceList = ({
-  services = [],
+interface ServiceListProps {
+  services: ServiceState[];
+  isLoadingServices?: boolean;
+  role: string;
+  user: User;
+  users: User[];
+  getUserServices: (userId: string, date: string) => void;
+}
+
+export const ServiceList: React.FC<ServiceListProps> = ({
+  services,
   isLoadingServices = false,
   role,
   user,
   users = [],
   getUserServices,
 }) => {
-  const [userSelected, setUserSelected] = useState<string>(user?.userId); // just for admin
+  const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
   const [today] = useState(new Date());
   const [dateString, setDateString] = useState(today.toLocaleDateString());
 
@@ -29,10 +40,13 @@ export const ServiceList = ({
 
   const isAdmin = role === 'owner' || role === 'admin';
 
-  const handleOnSelectChange = (event) => {
-    const userId = event?.target?.value;
+  const handleOnSelectChange = (
+    event: React.SyntheticEvent<HTMLSelectElement>
+  ) => {
+    const userId = (event.target as HTMLSelectElement)?.value;
+
     setUserSelected(userId);
-    getUserServices(userId);
+    getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {
@@ -91,9 +105,13 @@ export const ServiceList = ({
         )}
         {!isLoadingServices &&
           sortedData?.map((service, key) => (
-            <>
-              <ListItem key={key} service={service} itemNumber={key + 1} />
-            </>
+            <ListItem
+              key={key}
+              service={service}
+              itemNumber={key + 1}
+              userId={userSelected}
+              dateSelected={dateString}
+            />
           ))}
       </Box>
     </Box>

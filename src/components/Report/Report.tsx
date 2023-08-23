@@ -2,13 +2,6 @@ import {
   Heading,
   VStack,
   HStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
   Flex,
   Text,
   Input,
@@ -17,40 +10,52 @@ import {
   FormControl,
   FormLabel,
   Button,
+  Select,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import _groupBy from 'lodash/groupBy';
 import _find from 'lodash/find';
 import _filter from 'lodash/filter';
 import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
+import { useGetAllServicesQuery } from 'src/store/services/slice';
+import { useGetOutputsQuery } from 'src/store/outputs/slice';
+import { useGetUsersQuery } from 'src/store/auth/slice';
+import { ConsolidatedTable } from './ConsolidatedTable';
+import { PerDaysTable } from './PerDaysTable';
+import { OutputsTable } from './OutputsTable';
+
+const MONTHS = [
+  { value: 0, label: 'Enero' },
+  { value: 1, label: 'Febrero' },
+  { value: 2, label: 'Marzo' },
+  { value: 3, label: 'Abril' },
+  { value: 4, label: 'Mayo' },
+  { value: 5, label: 'Junio' },
+  { value: 6, label: 'Julio' },
+  { value: 7, label: 'Agosto' },
+  { value: 8, label: 'Septiembre' },
+  { value: 9, label: 'Octubre' },
+  { value: 10, label: 'Noviembre' },
+  { value: 11, label: 'Diciembre' },
+];
 
 export const Report = () => {
-  const [initialDate, setInitialDate] = useState<string>('');
-  const [finalDate, setFinalDate] = useState<string>('');
+  const [month, setMonth] = useState<number>(new Date().getMonth());
 
-  const {
-    user,
-    getAllServices,
-    reportServices,
-    users,
-    getUsers,
-    getAllOutputs,
-    outputs,
-  } = useAuth();
+  const { data: servicesData, isLoading } = useGetAllServicesQuery(month);
+  const { data: outputs } = useGetOutputsQuery(month);
+  const { data: users } = useGetUsersQuery(undefined);
 
-  useEffect(() => {
-    getUsers();
-    getAllServices();
-    getAllOutputs();
-  }, []);
+  const { services } = servicesData || {};
 
-  const groupedServices = _groupBy(reportServices, 'userId') || [];
+  if (isLoading) return <div>Loading...</div>;
+
+  const groupedServices = _groupBy(services, 'userId') || [];
 
   // group all the services by date formated as DD-MM-YYYY
-  const groupedServicesByDate = _groupBy(reportServices, (service) => {
-    const date = service.createdAt.toDate();
+  const groupedServicesByDate = _groupBy(services, (service) => {
+    const date = new Date(service.createdAt);
 
     return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   });
@@ -78,7 +83,7 @@ export const Report = () => {
   );
 
   const filteredFreeServices = _filter(
-    reportServices,
+    services,
     (service) => service.name !== 'corte gratis'
   );
 
@@ -94,93 +99,85 @@ export const Report = () => {
     0
   );
 
-  // sum all the values from the outputs
+  // // sum all the values from the outputs
   const totalOutputs = outputs?.reduce((previousValue, currentValue) => {
     return previousValue + Number(currentValue.value);
   }, 0);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
 
-    if (name === 'initialDate') {
-      // const firstDay = new Date(`${value} GMT-0500`);
-      // firstDay.setHours(0, 0, 0, 0);
-      // console.log({ firstDay, value });
-      setInitialDate(`${value} GMT-0500`);
-    }
-
-    if (name === 'endDate') {
-      setFinalDate(`${value} GMT-0500`);
-    }
+    setMonth(Number(value));
   };
 
-  const handleSearch = () => {
-    getAllServices(initialDate, finalDate);
-    getAllOutputs(initialDate, finalDate);
-  };
+  const consolidatedTableData = Object.keys(groupedServices).map((userId) => {
+    // filter free services, those doesn't add value
+    const services = _filter(
+      groupedServices[userId],
+      (service) => service.name !== 'corte gratis'
+    );
+
+    const userData = _find(users, { userId });
+
+    const totalAmount = services?.reduce((previousValue, currentValue) => {
+      if (currentValue.name === 'corte gratis') {
+        return previousValue + currentValue.value;
+      }
+
+      return previousValue + (currentValue.value * 40) / 100;
+    }, 0);
+
+    return {
+      barber: userData?.fullName,
+      services: services.length,
+      value: formatToCurrency(totalAmount),
+    };
+  });
+
+  const perDaysTableData = Object.keys(groupedServicesByDate).map((date) => {
+    const services = groupedServicesByDate[date];
+
+    // the total is the 40% of the value of each service
+    const total = services.reduce(
+      (acc, service) => acc + service.value * 0.4,
+      0
+    );
+
+    return {
+      date,
+      total: formatToCurrency(total),
+    };
+  });
+
+  const outputsTableData = outputs?.map((output) => {
+    return {
+      detail: output.detail,
+      date: output.paymentDate,
+      value: formatToCurrency(Number(output.value)),
+    };
+  });
 
   return (
     <>
       <Container maxWidth='container.xl' mt={5}>
         <HStack alignContent='center'>
           <FormControl>
-            <FormLabel>Fecha Inicial</FormLabel>
-            <Input type='date' name='initialDate' onChange={handleChange} />
+            <Select
+              placeholder='Selecciona un mes'
+              defaultValue={month}
+              onChange={handleMonthChange}
+            >
+              {MONTHS.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </Select>
           </FormControl>
-          <FormControl>
-            <FormLabel>Fecha Final</FormLabel>
-            <Input type='date' name='endDate' onChange={handleChange} />
-          </FormControl>
-          <Flex alignSelf='end'>
-            <Button colorScheme='blue' onClick={handleSearch}>
-              Buscar
-            </Button>
-          </Flex>
         </HStack>
         <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte consolidado</Heading>
-          <TableContainer>
-            <Table variant='simple'>
-              <Thead>
-                <Tr>
-                  <Th>Barbero</Th>
-                  <Th>servicios</Th>
-                  <Th isNumeric>Ingresos</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {groupedServices &&
-                  Object.keys(groupedServices).map((userId) => {
-                    const userInfo = _find(users, { userId: userId });
-
-                    // filter free services, those doesn't add value
-                    const services = _filter(
-                      groupedServices[userId],
-                      (service) => service.name !== 'corte gratis'
-                    );
-
-                    const totalAmount = services?.reduce(
-                      (previousValue, currentValue) => {
-                        if (currentValue.name === 'corte gratis') {
-                          return previousValue + currentValue.value;
-                        }
-
-                        return previousValue + (currentValue.value * 40) / 100;
-                      },
-                      0
-                    );
-
-                    return (
-                      <Tr key={userId}>
-                        <Td>{userInfo.fullName}</Td>
-                        <Td>{services.length}</Td>
-                        <Td>{formatToCurrency(totalAmount)}</Td>
-                      </Tr>
-                    );
-                  })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <ConsolidatedTable data={consolidatedTableData} />
           <Flex justifyContent='space-between'>
             <Text>Total Ingresos</Text>
             <Text fontWeight={900}>{formatToCurrency(totalReward)}</Text>
@@ -193,27 +190,7 @@ export const Report = () => {
         </VStack>
         <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte por dias</Heading>
-          <TableContainer>
-            <Table variant='simple'>
-              <Thead>
-                <Tr>
-                  <Th>Fecha</Th>
-                  <Th isNumeric>total</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {servicesByDate &&
-                  servicesByDate.map((data) => {
-                    return (
-                      <Tr key={data.date}>
-                        <Td>{data.date}</Td>
-                        <Td>{formatToCurrency(data.total)}</Td>
-                      </Tr>
-                    );
-                  })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <PerDaysTable data={perDaysTableData} />
           <Flex justifyContent='space-between'>
             <Text>Total Ingresos</Text>
             <Text fontWeight={900}>{formatToCurrency(totalServices)}</Text>
@@ -226,31 +203,7 @@ export const Report = () => {
         </VStack>
         <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte salidas</Heading>
-          <TableContainer>
-            <Table variant='simple'>
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>Detalle</Th>
-                  <Th>fecha</Th>
-                  <Th isNumeric>Valor</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {outputs &&
-                  outputs.map((output, key) => {
-                    return (
-                      <Tr key={output.id}>
-                        <Td>{key + 1}</Td>
-                        <Td>{output.detail}</Td>
-                        <Td>{output.paymentDate}</Td>
-                        <Td>{formatToCurrency(Number(output.value))}</Td>
-                      </Tr>
-                    );
-                  })}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <OutputsTable data={outputsTableData} />
           <Flex justifyContent='space-between'>
             <Text>Total Salidas</Text>
             <Text fontWeight={900}>{formatToCurrency(totalOutputs)}</Text>
@@ -261,11 +214,11 @@ export const Report = () => {
               {formatToCurrency(totalReward - totalOutputs)}
             </Text>
           </Flex>
-          <Link href='/'>
+          {/* <Link href='/'>
             <Text textAlign='center' fontSize='xl'>
               <ChakraLink>Regresar al home</ChakraLink>
             </Text>
-          </Link>
+          </Link> */}
         </VStack>
       </Container>
     </>

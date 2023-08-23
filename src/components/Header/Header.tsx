@@ -8,13 +8,18 @@ import {
   Button,
   Avatar,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
 import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 
 export const Header = () => {
-  const { logout, user } = useAuth();
+  const { data: sessionData } = useSession();
 
-  console.log('user', user);
+  if (!sessionData) return null;
+
+  const userData = sessionData.user?.data;
+  const { fullName, role } = userData || {};
+
+  const user = {};
 
   return (
     <Flex
@@ -31,7 +36,7 @@ export const Header = () => {
         justifyContent='space-between'
         width='full'
       >
-        <Heading size='lg'>{user?.fullName}</Heading>
+        <Heading size='lg'>{fullName}</Heading>
         <Menu>
           <MenuButton
             as={Button}
@@ -40,23 +45,33 @@ export const Header = () => {
             cursor={'pointer'}
             minW={0}
           >
-            <Avatar
-              name={user?.fullName}
-              size='md'
-              bg='gray.700'
-              color='white'
-            />
+            <Avatar name={fullName} size='md' bg='gray.700' color='white' />
           </MenuButton>
           <MenuList zIndex={10}>
-            <MenuItem onClick={logout}>Cerrar sesion</MenuItem>
-            {user.role === 'owner' && (
+            {/* <MenuItem onClick={() => signOut()}>Cerrar sesion</MenuItem> */}
+            <Link
+              href='/api/auth/signout'
+              onClick={(e) => {
+                e.preventDefault();
+                signOut({ callbackUrl: '/login' });
+              }}
+            >
+              <MenuItem>Cerrar sesion</MenuItem>
+            </Link>
+            {role === 'owner' && (
               <Link href='/users/add'>
                 <MenuItem>Crear usuario</MenuItem>
               </Link>
             )}
-            {user.role === 'owner' && (
-              <Link href='/report'>
-                <MenuItem>Reporte</MenuItem>
+            {role === 'owner' ||
+              (role === 'admin' && (
+                <Link href='/report'>
+                  <MenuItem>Reporte</MenuItem>
+                </Link>
+              ))}
+            {(role === 'owner' || role === 'admin') && (
+              <Link href='/products'>
+                <MenuItem>Productos</MenuItem>
               </Link>
             )}
           </MenuList>

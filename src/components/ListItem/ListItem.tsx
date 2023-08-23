@@ -13,9 +13,11 @@ import { MdDeleteForever } from 'react-icons/md';
 import { useAuth } from 'context/AuthContext';
 import { Alert } from '../Alert';
 import { formatToCurrency } from 'utils/formaters';
+import { useServices } from 'src/services/useServices';
 
-export const ListItem = ({ service, itemNumber }) => {
-  const { deleteBarberService, getUserServices } = useAuth();
+export const ListItem = ({ service, itemNumber, userId, dateSelected }) => {
+  const { deleteService, getServices } = useServices();
+
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const toast = useToast();
 
@@ -26,8 +28,8 @@ export const ListItem = ({ service, itemNumber }) => {
     ? (service?.value * 60) / 100
     : service?.value;
 
-  const handleDeleteClick = (id) => {
-    deleteBarberService(id)
+  const handleDeleteClick = (id: string) => {
+    deleteService(id)
       .then(() => {
         toast({
           title: 'Muy bien',
@@ -48,7 +50,7 @@ export const ListItem = ({ service, itemNumber }) => {
       })
       .finally(() => {
         setIsAlertOpen(false);
-        getUserServices();
+        getServices(userId, dateSelected);
       });
   };
 
