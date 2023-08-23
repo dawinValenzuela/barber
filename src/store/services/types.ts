@@ -5,6 +5,7 @@ export interface ServiceState extends Service {
   id: string;
   userId: string;
   date: string;
+  user?: string;
 }
 
 export interface ServicesState {

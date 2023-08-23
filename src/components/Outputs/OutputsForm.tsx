@@ -18,27 +18,26 @@ import {
   Text,
   Input,
 } from '@chakra-ui/react';
-import { useAuth } from 'context/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
 import { FormData } from './types';
 import Link from 'next/link';
+import { useOutputs } from 'src/services/useOutputs';
 
 const DEFAULT_VALUES = {
   paymentDate: '',
   detail: '',
   value: 0,
-  createdBy: '',
 };
 
 export const OutputsForm = () => {
-  const { user, addOutputPayment } = useAuth();
+  const { createOutput } = useOutputs();
+
   const toast = useToast();
 
-  const isAdmin = user.role === 'owner' || user.role === 'admin';
+  const isAdmin = true;
 
   const formDefaultValues = {
     ...DEFAULT_VALUES,
-    createdBy: user.uid,
   };
 
   const {
@@ -53,7 +52,7 @@ export const OutputsForm = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await addOutputPayment(data);
+      await createOutput(data).unwrap();
       reset(formDefaultValues);
       toast({
         title: 'Muy bien',
@@ -133,11 +132,11 @@ export const OutputsForm = () => {
           </Button>
         </Stack>
       </form>
-      <Link href='/'>
+      {/* <Link href='/'>
         <Text textAlign='center' fontSize='xl'>
           <ChakraLink>Regresar al listado de servicios</ChakraLink>
         </Text>
-      </Link>
+      </Link> */}
     </VStack>
   );
 };

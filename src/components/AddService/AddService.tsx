@@ -48,6 +48,8 @@ export const AddService = () => {
     ...DEFAULT_VALUES,
   };
 
+  console.log(sessionData);
+
   const {
     register,
     handleSubmit,
@@ -87,6 +89,11 @@ export const AddService = () => {
   const isAdmin = user.data.role === 'owner' || user.data.role === 'admin';
 
   const onSubmit = async (data: FormData) => {
+    if (!isAdmin) {
+      data.userId = user.data.userId;
+      data.createdAt = new Date().toISOString();
+    }
+
     try {
       await createService(data).unwrap();
       toast({

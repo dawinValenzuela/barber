@@ -17,42 +17,41 @@ import {
   FormControl,
   FormLabel,
   Button,
+  Select,
 } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import _groupBy from 'lodash/groupBy';
 import _find from 'lodash/find';
 import _filter from 'lodash/filter';
 import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
-import { useServices } from 'src/services/useServices';
-import { useUsers } from 'src/services/useUsers';
-import { Timestamp } from 'firebase/firestore';
+import { useGetAllServicesQuery } from 'src/store/services/slice';
+import { useGetOutputsQuery } from 'src/store/outputs/slice';
+import { useGetUsersQuery } from 'src/store/auth/slice';
+
+const MONTHS = [
+  { value: 0, label: 'Enero' },
+  { value: 1, label: 'Febrero' },
+  { value: 2, label: 'Marzo' },
+  { value: 3, label: 'Abril' },
+  { value: 4, label: 'Mayo' },
+  { value: 5, label: 'Junio' },
+  { value: 6, label: 'Julio' },
+  { value: 7, label: 'Agosto' },
+  { value: 8, label: 'Septiembre' },
+  { value: 9, label: 'Octubre' },
+  { value: 10, label: 'Noviembre' },
+  { value: 11, label: 'Diciembre' },
+];
 
 export const Report = () => {
-  const [initialDate, setInitialDate] = useState<string>('');
-  const [finalDate, setFinalDate] = useState<string>('');
+  const [month, setMonth] = useState<number>(new Date().getMonth());
 
-  const { getReportServices, reportServices, status } = useServices();
-  const { users } = useUsers();
+  const { data: servicesData, isLoading } = useGetAllServicesQuery(month);
+  const { data: outputs } = useGetOutputsQuery(month);
+  const { data: users } = useGetUsersQuery(undefined);
 
-  const { services } = reportServices;
-
-  // const {
-  //   user,
-  //   getAllServices,
-  //   reportServices,
-  //   users,
-  //   getUsers,
-  //   getAllOutputs,
-  //   outputs,
-  // } = useAuth();
-
-  const isLoading = status === 'loading';
-
-  useEffect(() => {
-    getReportServices();
-    // getAllOutputs();
-  }, [getReportServices]);
+  const { services } = servicesData || {};
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -105,28 +104,14 @@ export const Report = () => {
   );
 
   // // sum all the values from the outputs
-  // const totalOutputs = outputs?.reduce((previousValue, currentValue) => {
-  //   return previousValue + Number(currentValue.value);
-  // }, 0);
+  const totalOutputs = outputs?.reduce((previousValue, currentValue) => {
+    return previousValue + Number(currentValue.value);
+  }, 0);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
 
-    if (name === 'initialDate') {
-      // const firstDay = new Date(`${value} GMT-0500`);
-      // firstDay.setHours(0, 0, 0, 0);
-      // console.log({ firstDay, value });
-      setInitialDate(`${value} GMT-0500`);
-    }
-
-    if (name === 'endDate') {
-      setFinalDate(`${value} GMT-0500`);
-    }
-  };
-
-  const handleSearch = () => {
-    // getAllServices(initialDate, finalDate);
-    // getAllOutputs(initialDate, finalDate);
+    setMonth(Number(value));
   };
 
   return (
@@ -134,18 +119,18 @@ export const Report = () => {
       <Container maxWidth='container.xl' mt={5}>
         <HStack alignContent='center'>
           <FormControl>
-            <FormLabel>Fecha Inicial</FormLabel>
-            <Input type='date' name='initialDate' onChange={handleChange} />
+            <Select
+              placeholder='Selecciona un mes'
+              defaultValue={month}
+              onChange={handleMonthChange}
+            >
+              {MONTHS.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </Select>
           </FormControl>
-          <FormControl>
-            <FormLabel>Fecha Final</FormLabel>
-            <Input type='date' name='endDate' onChange={handleChange} />
-          </FormControl>
-          <Flex alignSelf='end'>
-            <Button colorScheme='blue' onClick={handleSearch}>
-              Buscar
-            </Button>
-          </Flex>
         </HStack>
         <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte consolidado</Heading>
@@ -161,13 +146,13 @@ export const Report = () => {
               <Tbody>
                 {groupedServices &&
                   Object.keys(groupedServices).map((userId) => {
-                    const userInfo = _find(users, { userId: userId });
-
                     // filter free services, those doesn't add value
                     const services = _filter(
                       groupedServices[userId],
                       (service) => service.name !== 'corte gratis'
                     );
+
+                    const userData = _find(users, { userId });
 
                     const totalAmount = services?.reduce(
                       (previousValue, currentValue) => {
@@ -182,7 +167,7 @@ export const Report = () => {
 
                     return (
                       <Tr key={userId}>
-                        <Td>{userInfo.fullName}</Td>
+                        <Td>{userData?.fullName}</Td>
                         <Td>{services.length}</Td>
                         <Td>{formatToCurrency(totalAmount)}</Td>
                       </Tr>
@@ -234,7 +219,7 @@ export const Report = () => {
           </Text>
         </Link> */}
         </VStack>
-        {/* <VStack mt={7} spacing={5} align='stretch' px={4}>
+        <VStack mt={7} spacing={5} align='stretch' px={4}>
           <Heading textAlign='center'>Reporte salidas</Heading>
           <TableContainer>
             <Table variant='simple'>
@@ -271,12 +256,12 @@ export const Report = () => {
               {formatToCurrency(totalReward - totalOutputs)}
             </Text>
           </Flex>
-          <Link href='/'>
+          {/* <Link href='/'>
             <Text textAlign='center' fontSize='xl'>
               <ChakraLink>Regresar al home</ChakraLink>
             </Text>
-          </Link>
-        </VStack> */}
+          </Link> */}
+        </VStack>
       </Container>
     </>
   );

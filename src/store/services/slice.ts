@@ -71,6 +71,7 @@ export const { clearServices } = servicesSlice.actions;
 export default servicesSlice.reducer;
 
 export const servicesApi = createApi({
+  reducerPath: 'servicesApi',
   baseQuery: fetchBaseQuery({ baseUrl: '' }),
   endpoints: (builder) => ({
     getBarberServices: builder.query({
@@ -91,6 +92,13 @@ export const servicesApi = createApi({
         method: 'delete',
       }),
     }),
+    getAllServices: builder.query({
+      query: (month?: number) => `/api/services?month=${month}`,
+    }),
+    getResumeServices: builder.query({
+      query: (userId: string, month?: number) =>
+        `/api/resume/${userId}?month=${month}`,
+    }),
   }),
 });
 
@@ -98,4 +106,6 @@ export const {
   useGetBarberServicesQuery,
   useCreateServiceMutation,
   useDeleteServiceMutation,
+  useGetAllServicesQuery,
+  useGetResumeServicesQuery,
 } = servicesApi;

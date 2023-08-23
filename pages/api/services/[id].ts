@@ -18,8 +18,6 @@ export default async function handler(
     try {
       const { id } = req.query;
 
-      console.log({ id });
-
       const docRef = doc(db, 'barber-services', id as string);
 
       await updateDoc(docRef, { isDeleted: true });

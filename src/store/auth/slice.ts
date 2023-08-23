@@ -1,3 +1,4 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { AuthState } from './types';
@@ -29,4 +30,15 @@ export const authSlice = createSlice({
   },
 });
 
+export const userApi = createApi({
+  reducerPath: 'userApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '/api/users' }),
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => '/',
+    }),
+  }),
+});
+
 export default authSlice.reducer;
+export const { useGetUsersQuery } = userApi;

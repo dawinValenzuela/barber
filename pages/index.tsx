@@ -1,4 +1,3 @@
-import { Container } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useEffect } from 'react';
 import { ServiceList, Resume, Navbar } from 'src/components';
@@ -6,6 +5,8 @@ import { useServices } from 'src/services/useServices';
 import { useUsers } from 'src/services/useUsers';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
+import { GetServerSidePropsContext } from 'next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -49,3 +50,19 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { req, res } = context;
+
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: { destination: '/login' },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}

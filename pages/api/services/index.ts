@@ -23,7 +23,8 @@ export default async function handler(
 
       // get default month if not provided
       const today = new Date();
-      const defaultMonth = today.getMonth();
+
+      const defaultMonth = Number(month) || today.getMonth();
 
       // Depending of the month, we need to get the initial and end date
       const initialDate = new Date(today.getFullYear(), defaultMonth, 1);
@@ -41,17 +42,27 @@ export default async function handler(
 
       const querySnapshot = await getDocs(q);
 
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
+      await Promise.all(
+        querySnapshot.docs.map(async (document) => {
+          const docData = document.data();
 
-        const service = {
-          ...docData,
-          id: doc.id,
-          createdAt: docData.createdAt.toDate().toLocaleString(),
-        } as ServiceState;
+          const userQuery = query(
+            collection(db, 'users'),
+            where('userId', '==', docData.userId)
+          );
+          const userQuerySnapshot = await getDocs(userQuery);
+          const userData = userQuerySnapshot.docs[0].data();
 
-        allServices.push(service);
-      });
+          const service = {
+            ...docData,
+            id: document.id,
+            createdAt: docData.createdAt.toDate().toLocaleString(),
+            user: userData?.fullName,
+          } as ServiceState;
+
+          allServices.push(service);
+        })
+      );
 
       res.status(200).json({
         services: allServices,

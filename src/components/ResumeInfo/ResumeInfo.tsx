@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   VStack,
   Table,
@@ -18,15 +18,15 @@ import _groupBy from 'lodash/groupBy';
 import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
 import { UserFilter } from 'src/components';
+import { useGetResumeServicesQuery } from 'src/store/services/slice';
+import { useGetUsersQuery } from 'src/store/auth/slice';
 
-export const ResumeInfo = () => {
-  const { resumeServices, getResumeUserInfo, user, users } = useAuth();
+export const ResumeInfo = ({ session }) => {
+  const [userId, setUserId] = useState(session?.userId);
+  const { data: resumeServices } = useGetResumeServicesQuery(userId);
+  const { data: users } = useGetUsersQuery(undefined);
 
-  const isAdmin = user?.role === 'owner' || user?.role === 'admin';
-
-  useEffect(() => {
-    getResumeUserInfo();
-  }, []);
+  const isAdmin = session?.role === 'owner' || session?.role === 'admin';
 
   const groupedServices = _groupBy(resumeServices, 'date') || [];
 
@@ -44,7 +44,7 @@ export const ResumeInfo = () => {
 
   const handleOnSelectChange = (event) => {
     const userId = event?.target?.value;
-    getResumeUserInfo(userId);
+    setUserId(userId);
   };
 
   return (
@@ -95,11 +95,11 @@ export const ResumeInfo = () => {
         <Text>Total Ingresos</Text>
         <Text fontWeight={900}>{formatToCurrency(totalReward)}</Text>
       </Flex>
-      <Link href='/'>
+      {/* <Link href='/'>
         <Text textAlign='center' fontSize='xl'>
           <ChakraLink>Regresar al home</ChakraLink>
         </Text>
-      </Link>
+      </Link> */}
     </VStack>
   );
 };
