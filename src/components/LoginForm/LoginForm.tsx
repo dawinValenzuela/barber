@@ -23,52 +23,42 @@ import { isEmpty } from 'lodash';
 interface FormData {
   email: string;
   password: string;
+  root: {
+    serverError: string;
+  };
 }
 
 export const LoginForm = ({ signIn, router }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    setError,
-  } = useForm<FormData>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-
-  const toast = useToast();
-  const { status } = useUsers();
-
-  const isLoading = status === 'loading';
+  const { register, handleSubmit, formState, setError } = useForm<FormData>();
+  const { errors } = formState;
 
   const handleReset = () => {
     // resetPassword('dawin.valenzuela@gmail.com');
   };
 
   const onSubmit = async (credentials: FormData) => {
+    console.log(credentials);
+
     const accessData = {
       email: credentials.email,
       password: md5(credentials.password),
     };
 
     try {
-      const { status, ok } = await signIn('google-credentials', {
+      const { ok, status } = await signIn('google-credentials', {
         redirect: false,
         ...accessData,
       });
 
-      if (ok) {
-        router.push('/');
-      } else {
+      if (!ok) {
         setError('root.serverError', {
           type: status,
         });
+      } else {
+        router.push('/');
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -82,12 +72,6 @@ export const LoginForm = ({ signIn, router }) => {
             <Heading size={{ base: 'sm' }}>Inicio de Sesion</Heading>
           </Stack>
         </Stack>
-        {isInvalid && (
-          <Alert status='error'>
-            <AlertIcon />
-            <AlertTitle>Usuario y/o contraseña incorrectos</AlertTitle>
-          </Alert>
-        )}
         <Box
           py={{ base: '8', sm: '8' }}
           px={{ base: '8', sm: '10' }}
@@ -109,7 +93,6 @@ export const LoginForm = ({ signIn, router }) => {
                     {...register('email', {
                       required: 'El email es obligatorio',
                     })}
-                    isDisabled={isLoading}
                   />
                   {errors?.email && (
                     <FormErrorMessage>
@@ -125,7 +108,6 @@ export const LoginForm = ({ signIn, router }) => {
                     {...register('password', {
                       required: 'la contraseña es obligatoria',
                     })}
-                    isDisabled={isLoading}
                   />
                   {errors?.password && (
                     <FormErrorMessage>
@@ -133,21 +115,22 @@ export const LoginForm = ({ signIn, router }) => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <HStack justify='space-between'>
+                {/* <HStack justify='space-between'>
                   <Checkbox defaultChecked>Recordar contraseña</Checkbox>
-                </HStack>
+                </HStack> */}
+                {isInvalid && (
+                  <Alert status='error'>
+                    <AlertIcon />
+                    <AlertTitle>Usuario y/o contraseña incorrectos</AlertTitle>
+                  </Alert>
+                )}
                 <Stack spacing='6'>
-                  <Button
-                    variant='solid'
-                    colorScheme='blue'
-                    type='submit'
-                    isDisabled={isLoading}
-                  >
+                  <Button variant='solid' colorScheme='blue' type='submit'>
                     Iniciar sessión
                   </Button>
                 </Stack>
                 {/* Reset password link button */}
-                <Stack spacing='6'>
+                {/* <Stack spacing='6'>
                   <Button
                     variant='outline'
                     colorScheme='gray'
@@ -156,7 +139,7 @@ export const LoginForm = ({ signIn, router }) => {
                   >
                     Recuperar contraseña
                   </Button>
-                </Stack>
+                </Stack> */}
               </Stack>
             </form>
           </Stack>

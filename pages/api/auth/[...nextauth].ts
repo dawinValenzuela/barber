@@ -48,15 +48,11 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+    async signIn({ account }) {
+      return account?.provider === 'google-credentials';
+    },
     async jwt({ token, user }) {
       return token;
-    },
-    async signIn({ account }) {
-      if (account?.provider === 'google-credentials') {
-        return true;
-      }
-
-      return false;
     },
   },
 };

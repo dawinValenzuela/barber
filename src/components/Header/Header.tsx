@@ -63,12 +63,11 @@ export const Header = () => {
                 <MenuItem>Crear usuario</MenuItem>
               </Link>
             )}
-            {role === 'owner' ||
-              (role === 'admin' && (
-                <Link href='/report'>
-                  <MenuItem>Reporte</MenuItem>
-                </Link>
-              ))}
+            {(role === 'owner' || role === 'admin') && (
+              <Link href='/report'>
+                <MenuItem>Reporte</MenuItem>
+              </Link>
+            )}
             {(role === 'owner' || role === 'admin') && (
               <Link href='/products'>
                 <MenuItem>Productos</MenuItem>

@@ -6,7 +6,11 @@ import { Navbar } from 'src/components';
 import { useSession } from 'next-auth/react';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
+
+  console.log({ status });
+
+  if (status === 'loading') return 'loading...';
 
   if (!sessionData) return <>{children}</>;
 

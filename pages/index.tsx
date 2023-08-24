@@ -44,7 +44,6 @@ const Home: NextPage = () => {
         user={sessionData?.user?.data}
         users={users}
       />
-      {/* <Navbar user={sessionData?.user?.data} role={role} /> */}
     </>
   );
 };
@@ -52,8 +51,6 @@ const Home: NextPage = () => {
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { req, res } = context;
-
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {
