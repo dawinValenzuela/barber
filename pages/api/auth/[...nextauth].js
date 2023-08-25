@@ -1,15 +1,18 @@
-import { set } from 'lodash';
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../../../firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       id: 'google-credentials',
-      credentials: {},
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+      },
       async authorize(credentials) {
         try {
           const { user } = await signInWithEmailAndPassword(
@@ -18,41 +21,37 @@ export const authOptions: NextAuthOptions = {
             credentials?.password
           );
 
-          return user;
+          if (user) {
+            return user;
+          } else {
+            return null;
+          }
         } catch (error) {
-          throw new Error('Invalid username/password');
+          throw new Error('Las credenciales son inválidas');
         }
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/login',
-  },
-  session: {
-    strategy: 'jwt',
-  },
   callbacks: {
-    async session({ session, user }) {
-      if (session?.user?.email) {
+    async jwt({ token, user, session }) {
+      if (user) {
         const q = query(
           collection(db, 'users'),
-          where('email', '==', session.user.email)
+          where('email', '==', user.email)
         );
         const querySnapshot = await getDocs(q);
         const userData = querySnapshot.docs.map((doc) => doc.data());
 
-        // Append user data to session
-        session.user.data = userData[0];
+        // Append user data to user
+        return { ...token, userData: userData[0] };
       }
-
-      return session;
-    },
-    async signIn({ account }) {
-      return account?.provider === 'google-credentials';
-    },
-    async jwt({ token, user }) {
       return token;
+    },
+    async session({ session, token }) {
+      return {
+        ...session,
+        userData: token.userData,
+      };
     },
   },
 };

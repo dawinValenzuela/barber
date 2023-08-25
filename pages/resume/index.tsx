@@ -20,7 +20,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
       userLogged: {
-        ...session?.user?.data,
+        ...session?.userData,
       },
     },
   };

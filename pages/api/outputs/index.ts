@@ -62,7 +62,7 @@ export default async function handler(
       const { output } = req.body;
 
       const today = new Date();
-      const createdBy = session.user.data.userId;
+      const createdBy = session.userData.userId;
 
       const docRef = await addDoc(collection(db, 'outputs'), {
         ...output,

@@ -16,10 +16,8 @@ export const Header = () => {
 
   if (!sessionData) return null;
 
-  const userData = sessionData.user?.data;
+  const userData = sessionData.userData;
   const { fullName, role } = userData || {};
-
-  const user = {};
 
   return (
     <Flex
