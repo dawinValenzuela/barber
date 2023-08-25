@@ -12,8 +12,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     if (req.method === 'GET') {
-      console.log('req.headers', req.headers);
-
       const allUsers = [];
       const q = query(collection(db, 'users'), where('role', '==', 'barber'));
       const querySnapshot = await getDocs(q);
