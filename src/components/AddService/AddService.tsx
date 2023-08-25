@@ -38,8 +38,7 @@ const DEFAULT_VALUES = {
   notes: '',
 };
 
-export const AddService = () => {
-  const { data: sessionData } = useSession();
+export const AddService = ({ userLogged }) => {
   const { users, getUsers } = useUsers();
   const { barberServices, createService } = useServices();
   const toast = useToast();
@@ -79,16 +78,11 @@ export const AddService = () => {
     }
   }, [serviceSelected, barberServices, setValue]);
 
-  if (!sessionData) {
-    return null;
-  }
-
-  const user = sessionData?.user;
-  const isAdmin = user.data.role === 'owner' || user.data.role === 'admin';
+  const isAdmin = userLogged.role === 'owner' || userLogged.role === 'admin';
 
   const onSubmit = async (data: FormData) => {
     if (!isAdmin) {
-      data.userId = user.data.userId;
+      data.userId = userLogged.userId;
       data.createdAt = new Date().toISOString();
     }
 

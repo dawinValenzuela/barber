@@ -16,10 +16,8 @@ export const Header = () => {
 
   if (!sessionData) return null;
 
-  const userData = sessionData.user?.data;
+  const userData = sessionData.userData;
   const { fullName, role } = userData || {};
-
-  const user = {};
 
   return (
     <Flex
@@ -63,12 +61,11 @@ export const Header = () => {
                 <MenuItem>Crear usuario</MenuItem>
               </Link>
             )}
-            {role === 'owner' ||
-              (role === 'admin' && (
-                <Link href='/report'>
-                  <MenuItem>Reporte</MenuItem>
-                </Link>
-              ))}
+            {(role === 'owner' || role === 'admin') && (
+              <Link href='/report'>
+                <MenuItem>Reporte</MenuItem>
+              </Link>
+            )}
             {(role === 'owner' || role === 'admin') && (
               <Link href='/products'>
                 <MenuItem>Productos</MenuItem>

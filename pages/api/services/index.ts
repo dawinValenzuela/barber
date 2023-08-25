@@ -95,7 +95,7 @@ export default async function handler(
         isDeleted: false,
       };
 
-      const createdBy = session.user.data.userId;
+      const createdBy = session.userData.userId;
 
       await addDoc(collection(db, 'barber-services'), {
         ...newService,

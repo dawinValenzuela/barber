@@ -14,11 +14,11 @@ const Home: NextPage = () => {
   const { getServices, resetServices, services, status } = useServices();
 
   useEffect(() => {
-    if (sessionData?.user.data.userId) {
-      getServices(sessionData.user.data.userId);
+    if (sessionData?.userData.userId) {
+      getServices(sessionData.userData.userId);
       getUsers();
     }
-  }, [getServices, getUsers, sessionData?.user.data.userId]);
+  }, [getServices, getUsers, sessionData?.userData.userId]);
 
   useEffect(() => {
     return () => {
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
     return <div>Loading...</div>;
 
   const isLoadingServices = status === 'loading';
-  const userData = sessionData.user.data;
+  const userData = sessionData.userData;
   const role = userData.role;
 
   return (
@@ -41,10 +41,9 @@ const Home: NextPage = () => {
         isLoadingServices={isLoadingServices}
         getUserServices={getServices}
         role={role}
-        user={sessionData?.user?.data}
+        user={userData}
         users={users}
       />
-      {/* <Navbar user={sessionData?.user?.data} role={role} /> */}
     </>
   );
 };
@@ -52,8 +51,6 @@ const Home: NextPage = () => {
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { req, res } = context;
-
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {

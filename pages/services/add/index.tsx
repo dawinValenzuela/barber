@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-function AddService() {
-  return <AddServiceForm />;
+function AddService({ userLogged }) {
+  return <AddServiceForm userLogged={userLogged} />;
 }
 
 export default AddService;
@@ -19,6 +19,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   return {
-    props: {},
+    props: {
+      userLogged: {
+        ...session?.userData,
+      },
+    },
   };
 }

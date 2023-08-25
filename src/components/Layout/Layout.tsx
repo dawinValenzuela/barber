@@ -6,11 +6,14 @@ import { Navbar } from 'src/components';
 import { useSession } from 'next-auth/react';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
+
+  if (status === 'loading') return 'loading...';
 
   if (!sessionData) return <>{children}</>;
 
-  const role = sessionData?.user?.data?.role;
+  const userData = sessionData?.userData;
+  const role = userData?.role;
 
   return (
     <>
@@ -23,7 +26,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       <Container as='section' minH='100%' maxW='container.lg'>
         {children}
         <Box mt={8}>
-          <Navbar user={sessionData?.user?.data} role={role} />
+          <Navbar user={userData} role={role} />
         </Box>
       </Container>
     </>
