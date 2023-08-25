@@ -10,26 +10,33 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  if (req.method === 'GET') {
-    const allUsers = [];
-    const q = query(collection(db, 'users'), where('role', '==', 'barber'));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      const docData = doc.data();
+  try {
+    if (req.method === 'GET') {
+      console.log('req.headers', req.headers);
 
-      const user = {
-        ...docData,
-        id: doc.id,
-      };
+      const allUsers = [];
+      const q = query(collection(db, 'users'), where('role', '==', 'barber'));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
 
-      allUsers.push(user);
-    });
+        const user = {
+          ...docData,
+          id: doc.id,
+        };
 
-    res.status(200).json(allUsers);
-  } else {
-    // Handle any other HTTP method
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+        allUsers.push(user);
+      });
+
+      res.status(200).json(allUsers);
+    } else {
+      // Handle any other HTTP method
+      res.setHeader('Allow', ['GET']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+    }
+  } catch (error) {
+    console.error('Firebase error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
