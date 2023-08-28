@@ -33,8 +33,8 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      return account.provider === 'google-credentials';
+    async jwt(token, user) {
+      return token;
     },
     async session({ session }) {
       if (session?.user.email) {
