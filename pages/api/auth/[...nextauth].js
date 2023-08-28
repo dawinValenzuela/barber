@@ -32,19 +32,28 @@ export const authOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
-    async session({ session }) {
-      const q = query(
-        collection(db, 'users'),
-        where('email', '==', session.user.email)
-      );
-      const querySnapshot = await getDocs(q);
-      const userData = querySnapshot.docs.map((doc) => doc.data());
+    async jwt({ token }) {
+      if (token.email) {
+        const q = query(
+          collection(db, 'users'),
+          where('email', '==', token.email)
+        );
+        const querySnapshot = await getDocs(q);
+        const userData = querySnapshot.docs.map((doc) => doc.data());
 
-      return {
-        ...session,
-        userData: userData[0],
-      };
+        token.userData = userData[0];
+      }
+
+      return token;
+    },
+    async session({ session, token, user }) {
+      session.user = token.userData;
+
+      return session;
     },
   },
 };
