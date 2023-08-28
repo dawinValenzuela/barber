@@ -12,7 +12,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
 
   if (!sessionData) return <>{children}</>;
 
-  const userData = sessionData?.userData;
+  const userData = sessionData?.user;
   const role = userData?.role;
 
   return (

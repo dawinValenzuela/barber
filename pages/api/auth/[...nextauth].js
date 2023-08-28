@@ -9,7 +9,6 @@ export const authOptions = {
   providers: [
     CredentialsProvider({
       id: 'google-credentials',
-      name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
@@ -34,23 +33,25 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ account, token, user }) {
-      if (user) {
+    async signIn({ user, account, profile, email, credentials }) {
+      return account.provider === 'google-credentials';
+    },
+    async session({ session }) {
+      if (session?.user.email) {
         const q = query(
           collection(db, 'users'),
-          where('email', '==', user.email)
+          where('email', '==', session?.user.email)
         );
         const querySnapshot = await getDocs(q);
         const userData = querySnapshot.docs.map((doc) => doc.data());
 
-        // Append user data to user
-        set(token, 'user', userData[0]);
-      }
+        const newUser = {
+          ...session.user,
+          ...userData[0],
+        };
 
-      return token;
-    },
-    async session({ session, token }) {
-      set(session, 'userData', token.user);
+        set(session, 'user', newUser);
+      }
 
       return session;
     },

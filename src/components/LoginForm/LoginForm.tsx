@@ -37,8 +37,6 @@ export const LoginForm = ({ signIn, router }) => {
   };
 
   const onSubmit = async (credentials: FormData) => {
-    console.log(credentials);
-
     const accessData = {
       email: credentials.email,
       password: md5(credentials.password),

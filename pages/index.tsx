@@ -13,12 +13,14 @@ const Home: NextPage = () => {
   const { users, getUsers } = useUsers();
   const { getServices, resetServices, services, status } = useServices();
 
+  const { user } = sessionData || {};
+
   useEffect(() => {
-    if (sessionData?.userData.userId) {
-      getServices(sessionData.userData.userId);
+    if (user?.userId) {
+      getServices(user.userId);
       getUsers();
     }
-  }, [getServices, getUsers, sessionData?.userData.userId]);
+  }, [getServices, getUsers, user?.userId]);
 
   useEffect(() => {
     return () => {
@@ -30,7 +32,7 @@ const Home: NextPage = () => {
     return <div>Loading...</div>;
 
   const isLoadingServices = status === 'loading';
-  const userData = sessionData.userData;
+  const userData = sessionData.user;
   const role = userData.role;
 
   return (

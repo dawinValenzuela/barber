@@ -16,7 +16,7 @@ export const Header = () => {
 
   if (!sessionData) return null;
 
-  const userData = sessionData.userData;
+  const userData = sessionData.user;
   const { fullName, role } = userData || {};
 
   return (
