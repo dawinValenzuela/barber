@@ -44,7 +44,7 @@ export const authOptions = {
       return {
         ...session,
         ...user,
-        ...userData[0],
+        userData: userData[0],
       };
     },
   },
