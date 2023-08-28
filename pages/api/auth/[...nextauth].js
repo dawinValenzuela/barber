@@ -33,31 +33,19 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token }) {
-      return token;
-    },
-    async session({ session, token }) {
-      // console.log(token);
+    async session({ session, user }) {
+      const q = query(
+        collection(db, 'users'),
+        where('email', '==', session?.user.email)
+      );
+      const querySnapshot = await getDocs(q);
+      const userData = querySnapshot.docs.map((doc) => doc.data());
 
-      if (session?.user.email) {
-        const q = query(
-          collection(db, 'users'),
-          where('email', '==', session?.user.email)
-        );
-        const querySnapshot = await getDocs(q);
-        const userData = querySnapshot.docs.map((doc) => doc.data());
-
-        const newUser = {
-          ...session.user,
-          ...userData[0],
-        };
-
-        set(session, 'user', newUser);
-      }
-
-      // console.log('session', session);
-
-      return session;
+      return {
+        ...session,
+        ...user,
+        ...userData[0],
+      };
     },
   },
 };
