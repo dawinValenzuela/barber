@@ -33,17 +33,16 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
+    async session({ session }) {
       const q = query(
         collection(db, 'users'),
-        where('email', '==', session?.user.email)
+        where('email', '==', session.user.email)
       );
       const querySnapshot = await getDocs(q);
       const userData = querySnapshot.docs.map((doc) => doc.data());
 
       return {
         ...session,
-        ...user,
         userData: userData[0],
       };
     },
