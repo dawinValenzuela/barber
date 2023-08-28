@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../../../firebase/config';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { set } from 'lodash';
 
 export const authOptions = {
   providers: [
@@ -33,7 +34,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ account, token, user }) {
       if (user) {
         const q = query(
           collection(db, 'users'),
@@ -43,16 +44,15 @@ export const authOptions = {
         const userData = querySnapshot.docs.map((doc) => doc.data());
 
         // Append user data to user
-        return { ...token, userData: userData[0] };
+        set(token, 'user', userData[0]);
       }
+
       return token;
     },
     async session({ session, token }) {
-      console.log({ token });
-      return {
-        ...session,
-        ...token,
-      };
+      set(session, 'userData', token.user);
+
+      return session;
     },
   },
 };
