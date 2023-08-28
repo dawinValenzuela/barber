@@ -33,10 +33,12 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt(token, user) {
+    async jwt({ token }) {
       return token;
     },
-    async session({ session }) {
+    async session({ session, token }) {
+      // console.log(token);
+
       if (session?.user.email) {
         const q = query(
           collection(db, 'users'),
@@ -52,6 +54,8 @@ export const authOptions = {
 
         set(session, 'user', newUser);
       }
+
+      // console.log('session', session);
 
       return session;
     },
