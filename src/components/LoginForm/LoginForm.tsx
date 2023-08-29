@@ -53,6 +53,7 @@ export const LoginForm = ({ signIn, router }) => {
           type: status,
         });
       } else {
+        console.log('redirecting');
         router.push('/');
       }
     } catch (error) {

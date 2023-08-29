@@ -55,6 +55,8 @@ export default Home;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
 
+  console.log('server session', session);
+
   if (!session) {
     return {
       redirect: { destination: '/login' },
