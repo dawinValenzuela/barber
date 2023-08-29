@@ -32,10 +32,17 @@ export const authSlice = createSlice({
 
 export const userApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/users' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: '',
+    prepareHeaders: (headers) => {
+      const host = window.location.host;
+      headers.set('Host', host);
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => '/',
+      query: () => '/api/users',
     }),
   }),
 });

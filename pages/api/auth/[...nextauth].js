@@ -35,17 +35,8 @@ export const authOptions = {
   pages: {
     signIn: '/login',
   },
-  // cookies: {
-  //   sessionToken: {
-  //     name: 'next-auth.session-token',
-  //     options: {
-  //       secure: process.env.NODE_ENV === 'production', // Configura secure solo en producción
-  //     },
-  //   },
-  // },
   callbacks: {
     async jwt({ token }) {
-      console.log(token);
       if (token.email) {
         try {
           const q = query(
@@ -53,7 +44,13 @@ export const authOptions = {
             where('email', '==', token.email)
           );
           const querySnapshot = await getDocs(q);
-          const userData = querySnapshot.docs.map((doc) => doc.data());
+          const userData = querySnapshot.docs.map((doc) => ({
+            role: doc.data().role,
+            email: doc.data().email,
+            userId: doc.data().userId,
+            fullName: doc.data().fullName,
+            nit: doc.data().nit,
+          }));
 
           token.userData = userData[0];
         } catch (error) {

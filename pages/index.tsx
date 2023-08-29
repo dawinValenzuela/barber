@@ -10,7 +10,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const Home: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
-  const { users, getUsers } = useUsers();
+  const { users } = useUsers();
   const { getServices, resetServices, services, status } = useServices();
 
   const { user } = sessionData || {};
@@ -18,9 +18,8 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (user?.userId) {
       getServices(user.userId);
-      getUsers();
     }
-  }, [getServices, getUsers, user?.userId]);
+  }, [getServices, user?.userId]);
 
   useEffect(() => {
     return () => {
