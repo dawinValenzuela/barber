@@ -35,6 +35,14 @@ export const authOptions = {
   pages: {
     signIn: '/login',
   },
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        secure: process.env.NODE_ENV === 'production', // Configura secure solo en producción
+      },
+    },
+  },
   callbacks: {
     async jwt({ token }) {
       if (token.email) {
@@ -50,7 +58,7 @@ export const authOptions = {
 
       return token;
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       session.user = token.userData;
 
       return session;
