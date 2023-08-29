@@ -35,8 +35,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '',
     prepareHeaders: (headers) => {
-      const host = window.location.host;
-      headers.set('Host', host);
+      headers.set('Accept', 'application/json');
       return headers;
     },
   }),

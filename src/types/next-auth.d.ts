@@ -9,6 +9,8 @@ declare module 'next-auth' {
       userId: string;
       role: string;
       nit: string;
+      name?: string;
+      image?: string;
     };
   }
 }
