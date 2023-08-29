@@ -37,31 +37,31 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token }) {
-      if (token.email) {
-        try {
-          const q = query(
-            collection(db, 'users'),
-            where('email', '==', token.email)
-          );
-          const querySnapshot = await getDocs(q);
-          const userData = querySnapshot.docs.map((doc) => ({
-            role: doc.data().role,
-            email: doc.data().email,
-            userId: doc.data().userId,
-            fullName: doc.data().fullName,
-            nit: doc.data().nit,
-          }));
+      // if (token.email) {
+      //   try {
+      //     const q = query(
+      //       collection(db, 'users'),
+      //       where('email', '==', token.email)
+      //     );
+      //     const querySnapshot = await getDocs(q);
+      //     const userData = querySnapshot.docs.map((doc) => ({
+      //       role: doc.data().role,
+      //       email: doc.data().email,
+      //       userId: doc.data().userId,
+      //       fullName: doc.data().fullName,
+      //       nit: doc.data().nit,
+      //     }));
 
-          token.userData = userData[0];
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      //     token.userData = userData[0];
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
 
       return token;
     },
     async session({ session, token }) {
-      session.user = token.userData;
+      // session.user = token.userData;
 
       return session;
     },

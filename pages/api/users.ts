@@ -10,6 +10,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  console.log('request.auth:', session?.user);
+
   try {
     if (req.method === 'GET') {
       const allUsers = [];
