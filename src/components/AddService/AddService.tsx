@@ -25,7 +25,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { FormData, Option, Service, User } from './types';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useUsers } from 'src/services/useUsers';
+import { useUsers } from 'src/services/useAuth';
 import { useServices } from 'src/services/useServices';
 
 const DEFAULT_VALUES = {

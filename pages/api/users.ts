@@ -1,37 +1,36 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { getSession } from 'next-auth/react';
-import { db } from '../../firebase/config';
+import admin from '../../firebase/admin';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
-
-  if (!session) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   try {
-    if (req.method === 'GET') {
-      const allUsers = [];
-      const q = query(collection(db, 'users'), where('role', '==', 'barber'));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
+    const token = req.headers.authorization?.split(' ')[1];
 
-        const user = {
-          ...docData,
-          id: doc.id,
-        };
-
-        allUsers.push(user);
-      });
-
-      res.status(200).json(allUsers);
-    } else {
-      // Handle any other HTTP method
-      res.setHeader('Allow', ['GET']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    if (!decodedToken) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (req.method !== 'GET') {
+      res.setHeader('Allow', ['GET']);
+      return res.status(405).end(`Method ${req.method} Not Allowed`);
+    }
+
+    const usersSnapshot = await admin
+      .firestore()
+      .collection('users')
+      .where('role', '==', 'barber')
+      .get();
+    const allUsers = usersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(allUsers);
   } catch (error) {
     console.error('Firebase error:', error);
     res.status(500).json({ error: 'Internal Server Error' });

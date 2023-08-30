@@ -9,15 +9,22 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { useAuth } from 'src/services/useAuth';
 
 export const Header = () => {
-  const { data: sessionData } = useSession();
+  // const { data: sessionData } = useSession();
+  // const { logOut } = useUsers();
 
-  if (!sessionData) return null;
+  // if (!sessionData) return null;
+
+  const { logOut } = useAuth();
+
+  const sessionData = {};
 
   const userData = sessionData.user;
   const { fullName, role } = userData || {};
+
+  const handleLogout = () => {};
 
   return (
     <Flex
@@ -51,7 +58,7 @@ export const Header = () => {
               href='/api/auth/signout'
               onClick={(e) => {
                 e.preventDefault();
-                signOut({ callbackUrl: '/login' });
+                logOut();
               }}
             >
               <MenuItem>Cerrar sesion</MenuItem>

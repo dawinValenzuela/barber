@@ -7,14 +7,11 @@ import {
 import { useCallback } from 'react';
 import { clearServices } from 'src/store/services/slice';
 import {
-  useGetBarberServicesQuery,
   useCreateServiceMutation,
   useDeleteServiceMutation,
 } from 'src/store/services/slice';
 
 export const useServices = () => {
-  const { data: barberServices } = useGetBarberServicesQuery();
-
   const [createService] = useCreateServiceMutation();
 
   const [deleteService] = useDeleteServiceMutation();
@@ -47,7 +44,6 @@ export const useServices = () => {
     status,
     error,
     reportServices,
-    barberServices,
     getServices,
     resetServices,
     getReportServices,

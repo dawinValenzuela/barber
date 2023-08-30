@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import md5 from 'md5';
-import { useUsers } from 'src/services/useUsers';
+import { useUsers } from 'src/services/useAuth';
 import { isEmpty } from 'lodash';
 
 interface FormData {
@@ -43,19 +43,8 @@ export const LoginForm = ({ signIn, router }) => {
     };
 
     try {
-      const { ok, status } = await signIn('google-credentials', {
-        redirect: false,
-        ...accessData,
-      });
-
-      if (!ok) {
-        setError('root.serverError', {
-          type: status,
-        });
-      } else {
-        console.log('redirecting');
-        router.push('/');
-      }
+      await signIn(accessData);
+      router.push('/');
     } catch (error) {
       console.error(error);
     }

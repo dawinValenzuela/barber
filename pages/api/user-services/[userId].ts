@@ -1,19 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
+import admin from '../../../firebase/admin';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
-
-  if (!session) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   if (req.method === 'GET') {
-    const { userId, date } = req.query;
+    const token = req.headers.authorization?.split(' ')[1];
 
-    const allServices = [];
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    if (!decodedToken) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { userId, date } = req.query;
 
     let dateString = '';
 
@@ -24,24 +26,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       dateString = today.toLocaleDateString();
     }
 
-    const q = query(
-      collection(db, 'barber-services'),
-      where('userId', '==', userId),
-      where('isDeleted', '==', false),
-      where('date', '==', dateString)
-    );
+    const querySnapshot = await admin
+      .firestore()
+      .collection('barber-services')
+      .where('userId', '==', userId)
+      .where('isDeleted', '==', false)
+      .where('date', '==', dateString)
+      .get();
 
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      const docData = doc.data();
-
-      const service = {
-        ...docData,
-        id: doc.id,
-      };
-
-      allServices.push(service);
-    });
+    const allServices = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     res.status(200).json(allServices);
   } else {

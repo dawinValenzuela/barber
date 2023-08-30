@@ -1,24 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
-import { ServiceState } from 'src/store/services/types';
-import { authOptions } from '../auth/[...nextauth]';
+import admin from '../../../firebase/admin';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   if (req.method === 'GET') {
     try {
-      const allServices: ServiceState[] = [];
-
       const { month } = req.query;
 
       // get default month if not provided
@@ -33,41 +21,42 @@ export default async function handler(
       initialDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
 
-      const q = query(
-        collection(db, 'barber-services'),
-        where('createdAt', '>=', initialDate),
-        where('createdAt', '<=', endDate),
-        where('isDeleted', '==', false)
-      );
+      const querySnapshot = await admin
+        .firestore()
+        .collection('barber-services')
+        .where('createdAt', '>=', initialDate)
+        .where('createdAt', '<=', endDate)
+        .where('isDeleted', '==', false)
+        .get();
 
-      const querySnapshot = await getDocs(q);
+      const allServices = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      await Promise.all(
-        querySnapshot.docs.map(async (document) => {
-          const docData = document.data();
+      // await Promise.all(
+      //   querySnapshot.docs.map(async (document) => {
+      //     const docData = document.data();
 
-          const userQuery = query(
-            collection(db, 'users'),
-            where('userId', '==', docData.userId)
-          );
-          const userQuerySnapshot = await getDocs(userQuery);
-          const userData = userQuerySnapshot.docs[0].data();
+      //     const userQuery = query(
+      //       collection(db, 'users'),
+      //       where('userId', '==', docData.userId)
+      //     );
+      //     const userQuerySnapshot = await getDocs(userQuery);
+      //     const userData = userQuerySnapshot.docs[0].data();
 
-          const service = {
-            ...docData,
-            id: document.id,
-            createdAt: docData.createdAt.toDate().toLocaleString(),
-            user: userData?.fullName,
-          } as ServiceState;
+      //     const service = {
+      //       ...docData,
+      //       id: document.id,
+      //       createdAt: docData.createdAt.toDate().toLocaleString(),
+      //       user: userData?.fullName,
+      //     } as ServiceState;
 
-          allServices.push(service);
-        })
-      );
+      //     allServices.push(service);
+      //   })
+      // );
 
-      res.status(200).json({
-        services: allServices,
-        total: allServices.length,
-      });
+      res.status(200).json(allServices);
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
     }

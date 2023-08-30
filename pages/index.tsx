@@ -1,49 +1,71 @@
 import type { NextPage } from 'next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ServiceList, Resume, Navbar } from 'src/components';
 import { useServices } from 'src/services/useServices';
-import { useUsers } from 'src/services/useUsers';
 import { getServerSession } from 'next-auth';
-import { useSession } from 'next-auth/react';
-import { GetServerSidePropsContext } from 'next';
-import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { GetServerSidePropsContext, GetStaticProps } from 'next';
+import { auth } from '../firebase/config';
+import { getAuth } from 'firebase/auth';
+import WithPrivateRoute from 'src/hoc/WithPrivateRoute';
+import { useAuth } from 'src/services/useAuth';
+import { useGetUsersQuery } from 'src/store/users/slice';
+import { useGetUserServicesQuery } from 'src/store/users/slice';
 
-const Home: NextPage = () => {
-  const { data: sessionData, status: sessionStatus } = useSession();
-  const { users } = useUsers();
-  const { getServices, resetServices, services, status } = useServices();
+type HomeProps = {
+  Auth: typeof WithPrivateRoute;
+};
 
-  const { user } = sessionData || {};
+const Home: NextPage & HomeProps = () => {
+  // const { data: sessionData, status: sessionStatus } = useSession();
+  // const { users } = useUsers();
+  // const { getServices, resetServices, services, status } = useServices();
 
-  useEffect(() => {
-    if (user?.userId) {
-      getServices(user.userId);
-    }
-  }, [getServices, user?.userId]);
+  const [user, setUser] = useState();
+  const [today] = useState(new Date());
+  const [dateString, setDateString] = useState(today.toLocaleDateString());
+  const { data: users } = useGetUsersQuery(undefined);
+  const { data: userServices } = useGetUserServicesQuery({
+    userId: user,
+    date: dateString,
+  });
 
-  useEffect(() => {
-    return () => {
-      resetServices();
-    };
-  }, [resetServices]);
+  // const { user } = sessionData || {};
 
-  if (sessionStatus === 'loading' || sessionData === null)
-    return <div>Loading...</div>;
+  // useEffect(() => {
+  //   if (user?.userId) {
+  //     getServices(user.userId);
+  //   }
+  // }, [getServices, user?.userId]);
 
-  const isLoadingServices = status === 'loading';
-  const userData = sessionData.user;
-  const role = userData.role;
+  // useEffect(() => {
+  //   return () => {
+  //     resetServices();
+  //   };
+  // }, [resetServices]);
+
+  // if (sessionStatus === 'loading' || sessionData === null)
+  //   return <div>Loading...</div>;
+
+  // const isLoadingServices = status === 'loading';
+  // const userData = sessionData.user;
+  // const role = userData.role;
 
   return (
     <>
-      <Resume services={services} />
+      <h1>home</h1>
+      <Resume services={userServices} />
       <ServiceList
-        services={services}
-        isLoadingServices={isLoadingServices}
-        getUserServices={getServices}
-        role={role}
-        user={userData}
+        services={userServices}
+        // isLoadingServices={isLoadingServices}
+        // getUserServices={getServices}
+        // role={role}
+        // user={userData}
+        setUser={setUser}
+        setDateString={setDateString}
+        dateString={dateString}
+        today={today}
         users={users}
+        userSelected={user}
       />
     </>
   );
@@ -51,18 +73,4 @@ const Home: NextPage = () => {
 
 export default Home;
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  console.log('server session', session);
-
-  if (!session) {
-    return {
-      redirect: { destination: '/login' },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}
+Home.Auth = WithPrivateRoute;

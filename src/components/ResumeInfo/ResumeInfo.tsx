@@ -19,7 +19,7 @@ import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
 import { UserFilter } from 'src/components';
 import { useGetResumeServicesQuery } from 'src/store/services/slice';
-import { useGetUsersQuery } from 'src/store/auth/slice';
+import { useGetUsersQuery } from 'src/store/users/slice';
 
 export const ResumeInfo = ({ session }) => {
   const [userId, setUserId] = useState(session?.userId);

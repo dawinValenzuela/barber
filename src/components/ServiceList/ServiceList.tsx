@@ -21,7 +21,7 @@ interface ServiceListProps {
   role: string;
   user: User;
   users: User[];
-  getUserServices: (userId: string, date: string) => void;
+  // getUserServices: (userId: string, date: string) => void;
 }
 
 export const ServiceList: React.FC<ServiceListProps> = ({
@@ -30,11 +30,14 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   role,
   user,
   users = [],
-  getUserServices,
+  setUser,
+  setDateString,
+  today,
+  dateString,
+  userSelected,
+  // getUserServices,
 }) => {
-  const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
-  const [today] = useState(new Date());
-  const [dateString, setDateString] = useState(today.toLocaleDateString());
+  // const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
 
   const sortedData = sortBy(services, ['hour']);
 
@@ -44,23 +47,25 @@ export const ServiceList: React.FC<ServiceListProps> = ({
     event: React.SyntheticEvent<HTMLSelectElement>
   ) => {
     const userId = (event.target as HTMLSelectElement)?.value;
-
-    setUserSelected(userId);
-    getUserServices(userId, dateString);
+    setUser(userId);
+    // setUserSelected(userId);
+    // getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {
     today.setDate(today.getDate() - 1);
     const newDate = today.toLocaleDateString();
+    // setDateString(newDate);
+    // getUserServices(userSelected, newDate);
     setDateString(newDate);
-    getUserServices(userSelected, newDate);
   };
 
   const handleRightClick = () => {
     today.setDate(today.getDate() + 1);
     const newDate = today.toLocaleDateString();
+    // setDateString(newDate);
+    // getUserServices(userSelected, newDate);
     setDateString(newDate);
-    getUserServices(userSelected, newDate);
   };
 
   return (
@@ -86,10 +91,10 @@ export const ServiceList: React.FC<ServiceListProps> = ({
         />
       </Flex>
 
-      {isAdmin && <UserFilter users={users} onChange={handleOnSelectChange} />}
+      <UserFilter users={users} onChange={handleOnSelectChange} />
 
       <Box w={'full'}>
-        {isLoadingServices && (
+        {/* {isLoadingServices && (
           <Flex width='100%' justifyContent='center'>
             <Spinner
               thickness='4px'
@@ -99,10 +104,10 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               size='xl'
             />
           </Flex>
-        )}
-        {!services.length && !isLoadingServices && (
+        )} */}
+        {/* {!services.length && !isLoadingServices && (
           <Text>No hay servicios</Text>
-        )}
+        )} */}
         {!isLoadingServices &&
           sortedData?.map((service, key) => (
             <ListItem

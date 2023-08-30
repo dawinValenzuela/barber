@@ -20,7 +20,7 @@ import { formatToCurrency } from 'utils/formaters';
 import Link from 'next/link';
 import { useGetAllServicesQuery } from 'src/store/services/slice';
 import { useGetOutputsQuery } from 'src/store/outputs/slice';
-import { useGetUsersQuery } from 'src/store/auth/slice';
+import { useGetUsersQuery } from 'src/store/users/slice';
 import { ConsolidatedTable } from './ConsolidatedTable';
 import { PerDaysTable } from './PerDaysTable';
 import { OutputsTable } from './OutputsTable';
