@@ -1,17 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../firebase/admin';
+import { decode } from 'next-auth/jwt';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const sessionToken = req.cookies['next-auth.session-token'];
 
-    if (!token) {
+    if (!sessionToken) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decoded = await decode({
+      token: sessionToken,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
-    if (!decodedToken) {
+    if (!decoded?.email) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 

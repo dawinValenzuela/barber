@@ -1,12 +1,16 @@
 import * as admin from 'firebase-admin';
 
-import serviceAccount from '../serviceAccount.json';
+const { DATABASE_URL, FIREBASE_ADMIN_CREDENTIALS } = process.env;
 
-const { DATABASE_URL } = process.env;
+const serviceAccount = FIREBASE_ADMIN_CREDENTIALS as string;
+
+const parsedServiceAccount = JSON.parse(serviceAccount);
 
 try {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    credential: admin.credential.cert(
+      parsedServiceAccount as admin.ServiceAccount
+    ),
     databaseURL: DATABASE_URL,
   });
 } catch (error) {}

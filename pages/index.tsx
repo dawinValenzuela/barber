@@ -6,16 +6,12 @@ import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext, GetStaticProps } from 'next';
 import { auth } from '../firebase/config';
 import { getAuth } from 'firebase/auth';
-import WithPrivateRoute from 'src/hoc/WithPrivateRoute';
 import { useAuth } from 'src/services/useAuth';
 import { useGetUsersQuery } from 'src/store/users/slice';
 import { useGetUserServicesQuery } from 'src/store/users/slice';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-type HomeProps = {
-  Auth: typeof WithPrivateRoute;
-};
-
-const Home: NextPage & HomeProps = () => {
+const Home: NextPage = () => {
   // const { data: sessionData, status: sessionStatus } = useSession();
   // const { users } = useUsers();
   // const { getServices, resetServices, services, status } = useServices();
@@ -24,10 +20,10 @@ const Home: NextPage & HomeProps = () => {
   const [today] = useState(new Date());
   const [dateString, setDateString] = useState(today.toLocaleDateString());
   const { data: users } = useGetUsersQuery(undefined);
-  const { data: userServices } = useGetUserServicesQuery({
-    userId: user,
-    date: dateString,
-  });
+  // const { data: userServices } = useGetUserServicesQuery({
+  //   userId: user,
+  //   date: dateString,
+  // });
 
   // const { user } = sessionData || {};
 
@@ -53,8 +49,8 @@ const Home: NextPage & HomeProps = () => {
   return (
     <>
       <h1>home</h1>
-      <Resume services={userServices} />
-      <ServiceList
+      {/* <Resume services={userServices} /> */}
+      {/* <ServiceList
         services={userServices}
         // isLoadingServices={isLoadingServices}
         // getUserServices={getServices}
@@ -66,11 +62,23 @@ const Home: NextPage & HomeProps = () => {
         today={today}
         users={users}
         userSelected={user}
-      />
+      /> */}
     </>
   );
 };
 
 export default Home;
 
-Home.Auth = WithPrivateRoute;
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: { destination: '/login' },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}

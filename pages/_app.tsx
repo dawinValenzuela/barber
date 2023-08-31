@@ -4,22 +4,19 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Provider } from 'react-redux';
 import { store } from 'src/store';
 import { Layout } from 'src/components';
+import { SessionProvider } from 'next-auth/react';
 
-const Noop = ({ children }) => <>{children}</>;
-
-function MyApp({ Component, pageProps }: AppProps) {
-  const Auth = Component.Auth || Noop;
-
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
-    <ChakraProvider>
-      <Provider store={store}>
-        <Auth>
+    <SessionProvider session={session}>
+      <ChakraProvider>
+        <Provider store={store}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </Auth>
-      </Provider>
-    </ChakraProvider>
+        </Provider>
+      </ChakraProvider>
+    </SessionProvider>
   );
 }
 

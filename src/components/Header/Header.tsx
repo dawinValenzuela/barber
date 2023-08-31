@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import {
   Flex,
   Heading,
@@ -10,21 +11,24 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useAuth } from 'src/services/useAuth';
+import { signOut, useSession } from 'next-auth/react';
 
 export const Header = () => {
   // const { data: sessionData } = useSession();
-  // const { logOut } = useUsers();
+  const { logOut } = useAuth();
 
   // if (!sessionData) return null;
-
-  const { logOut } = useAuth();
 
   const sessionData = {};
 
   const userData = sessionData.user;
   const { fullName, role } = userData || {};
 
-  const handleLogout = () => {};
+  const handleLogout = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    logOut();
+    signOut({ callbackUrl: '/login' });
+  };
 
   return (
     <Flex
@@ -54,13 +58,7 @@ export const Header = () => {
           </MenuButton>
           <MenuList zIndex={10}>
             {/* <MenuItem onClick={() => signOut()}>Cerrar sesion</MenuItem> */}
-            <Link
-              href='/api/auth/signout'
-              onClick={(e) => {
-                e.preventDefault();
-                logOut();
-              }}
-            >
+            <Link href='/api/auth/signout' onClick={handleLogout}>
               <MenuItem>Cerrar sesion</MenuItem>
             </Link>
             {role === 'owner' && (

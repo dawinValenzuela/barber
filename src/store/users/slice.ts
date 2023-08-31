@@ -7,6 +7,9 @@ export const usersApi = createApi({
     baseUrl: '',
     prepareHeaders: async (headers) => {
       const user = auth.currentUser;
+
+      console.log('user', user);
+
       if (user) {
         const token = await user.getIdToken();
         headers.set('Authorization', `Bearer ${token}`);
