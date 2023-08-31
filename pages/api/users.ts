@@ -1,23 +1,35 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../firebase/admin';
 import { decode } from 'next-auth/jwt';
+import { getSession } from 'next-auth/react';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const sessionToken = req.cookies['next-auth.session-token'];
+    const session = await getSession({ req });
 
-    if (!sessionToken) {
+    console.log('session', session);
+
+    if (!session) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const decoded = await decode({
-      token: sessionToken,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    // const sessionToken = req.cookies['next-auth.session-token'];
 
-    if (!decoded?.email) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    // console.log('sessionToken', req.cookies);
+    // console.log('sessionToken', sessionToken);
+
+    // if (!sessionToken) {
+    //   return res.status(401).json({ message: 'No session token provided' });
+    // }
+
+    // const decoded = await decode({
+    //   token: sessionToken,
+    //   secret: process.env.NEXTAUTH_SECRET,
+    // });
+
+    // if (!decoded?.email) {
+    //   return res.status(401).json({ message: 'Unauthorized' });
+    // }
 
     if (req.method !== 'GET') {
       res.setHeader('Allow', ['GET']);
