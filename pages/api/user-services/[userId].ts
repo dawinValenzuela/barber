@@ -1,30 +1,32 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../../firebase/admin';
+import { getSession } from 'next-auth/react';
+
+interface QueryParams {
+  userId: string;
+  dateSelected: string;
+}
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
-    const token = req.headers.authorization?.split(' ')[1];
+    const session = await getSession({ req });
 
-    if (!token) {
+    if (!session) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const { userId, dateSelected } = req.query as Partial<QueryParams>;
 
-    if (!decodedToken) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    let dateString: string = '';
 
-    const { userId, date } = req.query;
-
-    let dateString = '';
-
-    if (date) {
-      dateString = date;
+    if (dateSelected) {
+      dateString = dateSelected;
     } else {
       const today = new Date();
       dateString = today.toLocaleDateString();
     }
+
+    console.log('dateString', dateString);
 
     const querySnapshot = await admin
       .firestore()

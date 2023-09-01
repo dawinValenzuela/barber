@@ -22,7 +22,8 @@ export const usersApi = createApi({
       query: () => '/api/users',
     }),
     getUserServices: builder.query({
-      query: ({ userId, date }) => `/api/user-services/${userId}?date=${date}`,
+      query: ({ userId, dateSelected }) =>
+        `/api/user-services/${userId}?dateSelected=${dateSelected}`,
     }),
   }),
 });

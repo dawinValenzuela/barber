@@ -8,7 +8,7 @@ import { auth } from '../firebase/config';
 import { getAuth } from 'firebase/auth';
 import { useAuth } from 'src/services/useAuth';
 import { useGetUsersQuery } from 'src/store/users/slice';
-import { useGetUserServicesQuery } from 'src/store/users/slice';
+import { useUsers } from 'src/services/useUsers';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const Home: NextPage = () => {
@@ -16,10 +16,23 @@ const Home: NextPage = () => {
   // const { users } = useUsers();
   // const { getServices, resetServices, services, status } = useServices();
 
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<string>('');
   const [today] = useState(new Date());
-  const [dateString, setDateString] = useState(today.toLocaleDateString());
+  //DD/MM/YYYY
+  const [dateSelected, setDateSelected] = useState(today.toLocaleDateString());
   const { data: users } = useGetUsersQuery(undefined);
+  const { userServices, getUserServices } = useUsers();
+
+  const handleUserChange = (userId: string) => {
+    setUser(userId);
+    getUserServices({ userId, dateSelected });
+  };
+
+  const handleDateChange = (date: string) => {
+    setDateSelected(date);
+    getUserServices({ userId: user, dateSelected: date });
+  };
+
   // const { data: userServices } = useGetUserServicesQuery({
   //   userId: user,
   //   date: dateString,
@@ -49,20 +62,20 @@ const Home: NextPage = () => {
   return (
     <>
       <h1>home</h1>
-      {/* <Resume services={userServices} /> */}
-      {/* <ServiceList
+      <Resume services={userServices} />
+      <ServiceList
         services={userServices}
         // isLoadingServices={isLoadingServices}
         // getUserServices={getServices}
         // role={role}
         // user={userData}
-        setUser={setUser}
-        setDateString={setDateString}
-        dateString={dateString}
+        setUser={handleUserChange}
+        setDateString={handleDateChange}
+        dateString={dateSelected}
         today={today}
         users={users}
         userSelected={user}
-      /> */}
+      />
     </>
   );
 };

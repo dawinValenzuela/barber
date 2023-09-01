@@ -7,29 +7,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const session = await getSession({ req });
 
-    console.log('session', session);
-
     if (!session) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-
-    // const sessionToken = req.cookies['next-auth.session-token'];
-
-    // console.log('sessionToken', req.cookies);
-    // console.log('sessionToken', sessionToken);
-
-    // if (!sessionToken) {
-    //   return res.status(401).json({ message: 'No session token provided' });
-    // }
-
-    // const decoded = await decode({
-    //   token: sessionToken,
-    //   secret: process.env.NEXTAUTH_SECRET,
-    // });
-
-    // if (!decoded?.email) {
-    //   return res.status(401).json({ message: 'Unauthorized' });
-    // }
 
     if (req.method !== 'GET') {
       res.setHeader('Allow', ['GET']);

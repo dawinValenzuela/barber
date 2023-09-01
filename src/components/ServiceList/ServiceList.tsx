@@ -39,6 +39,8 @@ export const ServiceList: React.FC<ServiceListProps> = ({
 }) => {
   // const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
 
+  console.log({ dateString });
+
   const sortedData = sortBy(services, ['hour']);
 
   const isAdmin = role === 'owner' || role === 'admin';
@@ -63,8 +65,6 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   const handleRightClick = () => {
     today.setDate(today.getDate() + 1);
     const newDate = today.toLocaleDateString();
-    // setDateString(newDate);
-    // getUserServices(userSelected, newDate);
     setDateString(newDate);
   };
 
@@ -80,7 +80,14 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           icon={<Icon as={MdKeyboardArrowLeft} w={8} h={8} />}
           onClick={handleLeftClick}
         />
-        <Text fontSize='lg' textAlign='center' mb={4} fontWeight='bold'>
+        <Text
+          as='span'
+          fontSize='lg'
+          textAlign='center'
+          mb={4}
+          fontWeight='bold'
+          suppressHydrationWarning
+        >
           {dateString}
         </Text>
         <IconButton
@@ -108,7 +115,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
         {/* {!services.length && !isLoadingServices && (
           <Text>No hay servicios</Text>
         )} */}
-        {!isLoadingServices &&
+        {/* {!isLoadingServices &&
           sortedData?.map((service, key) => (
             <ListItem
               key={key}
@@ -117,7 +124,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               userId={userSelected}
               dateSelected={dateString}
             />
-          ))}
+          ))} */}
       </Box>
     </Box>
   );
