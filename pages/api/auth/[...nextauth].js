@@ -49,7 +49,7 @@ export const authOptions = {
             email: doc.data().email,
             userId: doc.data().userId,
             fullName: doc.data().fullName,
-            nit: doc.data().nit,
+            nit: doc.data().nit || '',
           }));
 
           token.userData = userData[0];

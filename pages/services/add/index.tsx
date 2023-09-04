@@ -18,6 +18,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
+  console.log(session);
+
   return {
     props: {
       userLogged: {
