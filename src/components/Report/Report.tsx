@@ -43,11 +43,9 @@ const MONTHS = [
 export const Report = () => {
   const [month, setMonth] = useState<number>(new Date().getMonth());
 
-  const { data: servicesData, isLoading } = useGetAllServicesQuery(month);
+  const { data: services, isLoading } = useGetAllServicesQuery(month);
   const { data: outputs } = useGetOutputsQuery(month);
   const { data: users } = useGetUsersQuery(undefined);
-
-  const { services } = servicesData || {};
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -55,7 +53,7 @@ export const Report = () => {
 
   // group all the services by date formated as DD-MM-YYYY
   const groupedServicesByDate = _groupBy(services, (service) => {
-    const date = new Date(service.createdAt);
+    const date = new Date(service.createdAt._seconds * 1000);
 
     return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   });

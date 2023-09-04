@@ -1,14 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
+import { getSession } from 'next-auth/react';
 import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
-import { authOptions } from '../auth/[...nextauth]';
+import admin from '../../../firebase/admin';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSession({ req });
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -16,8 +15,6 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      const allOutputs = [];
-
       const { month } = req.query;
 
       // get default month if not provided
@@ -31,15 +28,14 @@ export default async function handler(
       initialDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
 
-      const q = query(
-        collection(db, 'outputs'),
-        where('createdAt', '>=', initialDate),
-        where('createdAt', '<=', endDate)
-      );
+      const querySnapshot = await admin
+        .firestore()
+        .collection('outputs')
+        .where('createdAt', '>=', initialDate)
+        .where('createdAt', '<=', endDate)
+        .get();
 
-      const querySnapshot = await getDocs(q);
-
-      querySnapshot.forEach((doc) => {
+      const allOutputs = querySnapshot.docs.map((doc) => {
         const docData = doc.data();
 
         const output = {
@@ -48,7 +44,7 @@ export default async function handler(
           createdAt: docData.createdAt.toDate().toLocaleString(),
         };
 
-        allOutputs.push(output);
+        return output;
       });
 
       res.status(200).json(allOutputs);

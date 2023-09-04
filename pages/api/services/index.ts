@@ -1,10 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../../firebase/admin';
+import { getSession } from 'next-auth/react';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getSession({ req });
+
+  if (!session) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
   if (req.method === 'GET') {
     try {
       const { month } = req.query;
@@ -33,28 +40,6 @@ export default async function handler(
         id: doc.id,
         ...doc.data(),
       }));
-
-      // await Promise.all(
-      //   querySnapshot.docs.map(async (document) => {
-      //     const docData = document.data();
-
-      //     const userQuery = query(
-      //       collection(db, 'users'),
-      //       where('userId', '==', docData.userId)
-      //     );
-      //     const userQuerySnapshot = await getDocs(userQuery);
-      //     const userData = userQuerySnapshot.docs[0].data();
-
-      //     const service = {
-      //       ...docData,
-      //       id: document.id,
-      //       createdAt: docData.createdAt.toDate().toLocaleString(),
-      //       user: userData?.fullName,
-      //     } as ServiceState;
-
-      //     allServices.push(service);
-      //   })
-      // );
 
       res.status(200).json(allServices);
     } catch (error) {

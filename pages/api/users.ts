@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../firebase/admin';
-import { decode } from 'next-auth/jwt';
 import { getSession } from 'next-auth/react';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
