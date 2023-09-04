@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { usersApi } from './users/slice';
 import servicesReducer, { servicesApi } from './services/slice';
-import productsReducer from './products/slice';
+import productsReducer, { productsApi } from './products/slice';
 import { outputsApi } from './outputs/slice';
 
 export const store = configureStore({
@@ -11,12 +11,14 @@ export const store = configureStore({
     [servicesApi.reducerPath]: servicesApi.reducer,
     [outputsApi.reducerPath]: outputsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
+    [productsApi.reducerPath]: productsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       servicesApi.middleware,
       outputsApi.middleware,
-      usersApi.middleware
+      usersApi.middleware,
+      productsApi.middleware
     ),
 });
 

@@ -5,13 +5,10 @@ import { useProducts } from 'src/services/useProducts';
 import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { useGetProductsQuery } from 'src/store/products/slice';
 
 const ProductsPage: NextPage = () => {
-  const { products, getProducts } = useProducts();
-
-  useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+  const { data: products } = useGetProductsQuery(undefined);
 
   return <ProductList products={products} />;
 };

@@ -11,18 +11,10 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useAuth } from 'src/services/useAuth';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 
-export const Header = () => {
-  // const { data: sessionData } = useSession();
+export const Header = ({ fullName = '', role = '', isLoading = false }) => {
   const { logOut } = useAuth();
-
-  // if (!sessionData) return null;
-
-  const sessionData = {};
-
-  const userData = sessionData.user;
-  const { fullName, role } = userData || {};
 
   const handleLogout = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();

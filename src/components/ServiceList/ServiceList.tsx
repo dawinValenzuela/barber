@@ -28,19 +28,15 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   services,
   isLoadingServices = false,
   role,
-  user,
   users = [],
   setUser,
   setDateString,
   today,
   dateString,
   userSelected,
+  isArrowDisabled,
   // getUserServices,
 }) => {
-  // const [userSelected, setUserSelected] = useState<string>(user.userId); // just for admin
-
-  console.log({ dateString });
-
   const sortedData = sortBy(services, ['hour']);
 
   const isAdmin = role === 'owner' || role === 'admin';
@@ -50,15 +46,11 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   ) => {
     const userId = (event.target as HTMLSelectElement)?.value;
     setUser(userId);
-    // setUserSelected(userId);
-    // getUserServices(userId, dateString);
   };
 
   const handleLeftClick = () => {
     today.setDate(today.getDate() - 1);
     const newDate = today.toLocaleDateString();
-    // setDateString(newDate);
-    // getUserServices(userSelected, newDate);
     setDateString(newDate);
   };
 
@@ -79,6 +71,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           aria-label='left'
           icon={<Icon as={MdKeyboardArrowLeft} w={8} h={8} />}
           onClick={handleLeftClick}
+          isDisabled={isArrowDisabled}
         />
         <Text
           as='span'
@@ -95,13 +88,14 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           aria-label='right'
           icon={<Icon as={MdKeyboardArrowRight} w={8} h={8} />}
           onClick={handleRightClick}
+          isDisabled={isArrowDisabled}
         />
       </Flex>
 
       <UserFilter users={users} onChange={handleOnSelectChange} />
 
       <Box w={'full'}>
-        {/* {isLoadingServices && (
+        {isLoadingServices && (
           <Flex width='100%' justifyContent='center'>
             <Spinner
               thickness='4px'
@@ -111,11 +105,11 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               size='xl'
             />
           </Flex>
-        )} */}
-        {/* {!services.length && !isLoadingServices && (
+        )}
+        {!services.length && !isLoadingServices && (
           <Text>No hay servicios</Text>
-        )} */}
-        {/* {!isLoadingServices &&
+        )}
+        {!isLoadingServices &&
           sortedData?.map((service, key) => (
             <ListItem
               key={key}
@@ -124,7 +118,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               userId={userSelected}
               dateSelected={dateString}
             />
-          ))} */}
+          ))}
       </Box>
     </Box>
   );

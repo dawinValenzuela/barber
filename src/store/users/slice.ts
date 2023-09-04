@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
+import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+
 import { auth } from '../../../firebase/config';
+
+const usersAdapter = createEntityAdapter();
+
+const initialState = usersAdapter.getInitialState();
 
 export const usersApi = createApi({
   reducerPath: 'userApi',

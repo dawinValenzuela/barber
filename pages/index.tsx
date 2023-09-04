@@ -12,16 +12,15 @@ import { useUsers } from 'src/services/useUsers';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const Home: NextPage = () => {
-  // const { data: sessionData, status: sessionStatus } = useSession();
-  // const { users } = useUsers();
-  // const { getServices, resetServices, services, status } = useServices();
-
   const [user, setUser] = useState<string>('');
   const [today] = useState(new Date());
-  //DD/MM/YYYY
+
   const [dateSelected, setDateSelected] = useState(today.toLocaleDateString());
   const { data: users } = useGetUsersQuery(undefined);
-  const { userServices, getUserServices } = useUsers();
+  const { userServices, getUserServices } = useUsers({
+    userId: user,
+    dateSelected,
+  });
 
   const handleUserChange = (userId: string) => {
     setUser(userId);
@@ -33,42 +32,18 @@ const Home: NextPage = () => {
     getUserServices({ userId: user, dateSelected: date });
   };
 
-  // const { data: userServices } = useGetUserServicesQuery({
-  //   userId: user,
-  //   date: dateString,
-  // });
-
-  // const { user } = sessionData || {};
-
-  // useEffect(() => {
-  //   if (user?.userId) {
-  //     getServices(user.userId);
-  //   }
-  // }, [getServices, user?.userId]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     resetServices();
-  //   };
-  // }, [resetServices]);
-
-  // if (sessionStatus === 'loading' || sessionData === null)
-  //   return <div>Loading...</div>;
-
-  // const isLoadingServices = status === 'loading';
-  // const userData = sessionData.user;
-  // const role = userData.role;
+  const isArrowDisabled = !user;
 
   return (
     <>
-      <h1>home</h1>
-      <Resume services={userServices} />
+      <Resume services={userServices?.data || []} />
       <ServiceList
-        services={userServices}
-        // isLoadingServices={isLoadingServices}
+        services={userServices?.data || []}
+        isLoadingServices={userServices?.isLoading}
         // getUserServices={getServices}
         // role={role}
         // user={userData}
+        isArrowDisabled={isArrowDisabled}
         setUser={handleUserChange}
         setDateString={handleDateChange}
         dateString={dateSelected}
