@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Flex,
@@ -6,53 +6,19 @@ import {
   Badge,
   IconButton,
   Icon,
-  useToast,
   Divider,
 } from '@chakra-ui/react';
 import { MdDeleteForever } from 'react-icons/md';
-import { useAuth } from 'context/AuthContext';
-import { Alert } from '../Alert';
+
 import { formatToCurrency } from 'utils/formaters';
-import { useServices } from 'src/services/useServices';
 
-export const ListItem = ({ service, itemNumber, userId, dateSelected }) => {
-  const { deleteService, getServices } = useServices();
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const toast = useToast();
-
+export const ListItem = ({ service, itemNumber, handleDeleteClick }) => {
   const serviceName = service?.name;
   const isFreeService = serviceName === 'corte gratis';
 
   const percentageFromService = !isFreeService
     ? (service?.value * 60) / 100
     : service?.value;
-
-  const handleDeleteClick = (id: string) => {
-    deleteService(id)
-      .then(() => {
-        toast({
-          title: 'Muy bien',
-          description: 'El servicio se ha eliminado correctamente',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        });
-      })
-      .catch(() => {
-        toast({
-          title: 'Ah ocurrido un error',
-          description: 'Error al eliminar el servicio',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      })
-      .finally(() => {
-        setIsAlertOpen(false);
-        getServices(userId, dateSelected);
-      });
-  };
 
   return (
     <>
@@ -68,7 +34,7 @@ export const ListItem = ({ service, itemNumber, userId, dateSelected }) => {
             colorScheme='red'
             variant='outline'
             icon={<Icon as={MdDeleteForever} h={4} w={4} />}
-            onClick={() => setIsAlertOpen(true)}
+            onClick={() => handleDeleteClick(service.id)}
           />
         </Flex>
         <Flex justifyContent='space-between' mb={2} alignItems='center'>
@@ -92,11 +58,6 @@ export const ListItem = ({ service, itemNumber, userId, dateSelected }) => {
         </Flex>
       </Box>
       <Divider my={5} orientation='horizontal' colorScheme='blue' />
-      <Alert
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        onDelete={() => handleDeleteClick(service.id)}
-      />
     </>
   );
 };

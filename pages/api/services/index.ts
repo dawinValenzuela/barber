@@ -1,12 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../../firebase/admin';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const session = await getSession({ req });
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -71,14 +69,16 @@ export default async function handler(
 
       const createdBy = session.userData.userId;
 
-      await addDoc(collection(db, 'barber-services'), {
-        ...newService,
-        createdBy,
-      });
+      await admin
+        .firestore()
+        .collection('barber-services')
+        .add({ ...newService, createdBy });
 
       res.status(200).json({ message: 'Service created successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
     }
   }
-}
+};
+
+export default handler;

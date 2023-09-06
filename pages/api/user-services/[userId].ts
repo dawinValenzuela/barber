@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import admin from '../../../firebase/admin';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 interface QueryParams {
   userId: string;
@@ -9,7 +10,7 @@ interface QueryParams {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res, authOptions);
 
     if (!session) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -25,8 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const today = new Date();
       dateString = today.toLocaleDateString();
     }
-
-    console.log('dateString', dateString);
 
     const querySnapshot = await admin
       .firestore()

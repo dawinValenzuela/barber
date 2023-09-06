@@ -3,7 +3,17 @@ import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-function AddService({ userLogged }) {
+type AddServiceProps = {
+  userLogged: {
+    userId: string;
+    role: string;
+    fullName: string;
+    email: string;
+    nit: string;
+  };
+};
+
+function AddService({ userLogged }: AddServiceProps) {
   return <AddServiceForm userLogged={userLogged} />;
 }
 
@@ -17,8 +27,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       redirect: { destination: '/login' },
     };
   }
-
-  console.log(session);
 
   return {
     props: {

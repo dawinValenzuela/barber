@@ -1,14 +1,10 @@
 import { useCallback } from 'react';
-import { useGetUserServicesQuery, usersApi } from 'src/store/users/slice';
+import { usersApi, useDeleteUserServiceMutation } from 'src/store/users/slice';
 import { useAppSelector, useAppDispatch } from './store';
-import {
-  createSlice,
-  createEntityAdapter,
-  createSelector,
-} from '@reduxjs/toolkit';
 
 export const useUsers = ({ userId, dateSelected }) => {
   const dispatch = useAppDispatch();
+  const [deleteUserService] = useDeleteUserServiceMutation();
 
   const selectUserServicesResult = usersApi.endpoints.getUserServices.select({
     userId,
@@ -16,8 +12,6 @@ export const useUsers = ({ userId, dateSelected }) => {
   });
 
   const userServices = useAppSelector(selectUserServicesResult);
-
-  // console.log({ selectUserServicesResult });
 
   const getUserServices = useCallback(
     (params: { userId: string; dateSelected?: string }) => {
@@ -29,5 +23,6 @@ export const useUsers = ({ userId, dateSelected }) => {
   return {
     userServices,
     getUserServices,
+    deleteUserService,
   };
 };

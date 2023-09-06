@@ -7,6 +7,7 @@ import {
   Select,
   Icon,
   IconButton,
+  useToast,
 } from '@chakra-ui/react';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import React, { useState } from 'react';
@@ -14,6 +15,7 @@ import { sortBy } from 'lodash';
 import { UserFilter, ListItem } from 'src/components';
 import type { User } from 'src/types/user';
 import type { ServiceState } from 'src/store/services/types';
+import { Alert } from '../Alert';
 
 interface ServiceListProps {
   services: ServiceState[];
@@ -27,7 +29,6 @@ interface ServiceListProps {
 export const ServiceList: React.FC<ServiceListProps> = ({
   services,
   isLoadingServices = false,
-  role,
   users = [],
   setUser,
   setDateString,
@@ -35,11 +36,15 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   dateString,
   userSelected,
   isArrowDisabled,
-  // getUserServices,
+  isAdmin,
+  getUserServices,
+  deleteUserService,
 }) => {
-  const sortedData = sortBy(services, ['hour']);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [serviceId, setServiceId] = useState('');
 
-  const isAdmin = role === 'owner' || role === 'admin';
+  const toast = useToast();
+  const sortedData = sortBy(services, ['hour']);
 
   const handleOnSelectChange = (
     event: React.SyntheticEvent<HTMLSelectElement>
@@ -58,6 +63,39 @@ export const ServiceList: React.FC<ServiceListProps> = ({
     today.setDate(today.getDate() + 1);
     const newDate = today.toLocaleDateString();
     setDateString(newDate);
+  };
+
+  const handleConfirmDeleteClick = () => {
+    if (!serviceId) return;
+
+    deleteUserService(serviceId)
+      .then(() => {
+        toast({
+          title: 'Muy bien',
+          description: 'El servicio se ha eliminado correctamente',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      })
+      .catch(() => {
+        toast({
+          title: 'Ah ocurrido un error',
+          description: 'Error al eliminar el servicio',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      })
+      .finally(() => {
+        setIsAlertOpen(false);
+        // getUserServices({ userId: userSelected, dateSelected: dateString });
+      });
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setIsAlertOpen(true);
+    setServiceId(id);
   };
 
   return (
@@ -92,7 +130,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
         />
       </Flex>
 
-      <UserFilter users={users} onChange={handleOnSelectChange} />
+      {isAdmin && <UserFilter users={users} onChange={handleOnSelectChange} />}
 
       <Box w={'full'}>
         {isLoadingServices && (
@@ -117,9 +155,15 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               itemNumber={key + 1}
               userId={userSelected}
               dateSelected={dateString}
+              handleDeleteClick={handleDeleteClick}
             />
           ))}
       </Box>
+      <Alert
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        onDelete={() => handleConfirmDeleteClick()}
+      />
     </Box>
   );
 };

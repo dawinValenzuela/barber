@@ -1,28 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
-import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
-
-import { auth } from '../../../firebase/config';
-
-const usersAdapter = createEntityAdapter();
-
-const initialState = usersAdapter.getInitialState();
 
 export const usersApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '',
-    prepareHeaders: async (headers) => {
-      const user = auth.currentUser;
-
-      console.log('user', user);
-
-      if (user) {
-        const token = await user.getIdToken();
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: '' }),
+  tagTypes: ['Users'],
   endpoints: (builder) => ({
     getUsers: builder.query({
       query: () => '/api/users',
@@ -30,8 +11,31 @@ export const usersApi = createApi({
     getUserServices: builder.query({
       query: ({ userId, dateSelected }) =>
         `/api/user-services/${userId}?dateSelected=${dateSelected}`,
+      providesTags: ['Users'],
+    }),
+    deleteUserService: builder.mutation({
+      query: (serviceId) => ({
+        url: `/api/services/${serviceId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Users'],
+    }),
+    createUserService: builder.mutation({
+      query: (newService) => ({
+        url: '/api/services',
+        method: 'POST',
+        body: {
+          service: newService,
+        },
+      }),
+      invalidatesTags: ['Users'],
     }),
   }),
 });
 
-export const { useGetUsersQuery, useGetUserServicesQuery } = usersApi;
+export const {
+  useGetUsersQuery,
+  useGetUserServicesQuery,
+  useCreateUserServiceMutation,
+  useDeleteUserServiceMutation,
+} = usersApi;

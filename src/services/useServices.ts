@@ -1,9 +1,5 @@
 import { useAppSelector, useAppDispatch } from './store';
-import {
-  fetchServices,
-  fetchAllServices,
-  fetchBarberServices,
-} from 'src/store/services/actions';
+import { fetchServices, fetchAllServices } from 'src/store/services/actions';
 import { useCallback } from 'react';
 import { clearServices } from 'src/store/services/slice';
 import {
@@ -17,6 +13,7 @@ export const useServices = () => {
   const [deleteService] = useDeleteServiceMutation();
 
   const dispatch = useAppDispatch();
+
   const { services, status, error, reportServices } = useAppSelector(
     (state) => state.services
   );

@@ -23,9 +23,8 @@ import {
 } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import { FormData, Option, Service, User } from './types';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { useUsers } from 'src/services/useAuth';
+import { useGetUsersQuery } from 'src/store/users/slice';
+import { useGetBarberServicesQuery } from 'src/store/services/slice';
 import { useServices } from 'src/services/useServices';
 
 const DEFAULT_VALUES = {
@@ -39,8 +38,10 @@ const DEFAULT_VALUES = {
 };
 
 export const AddService = ({ userLogged }) => {
-  const { users, getUsers } = useUsers();
-  const { barberServices, createService } = useServices();
+  const { data: users } = useGetUsersQuery(undefined);
+  const { data: barberServices } = useGetBarberServicesQuery(undefined);
+  const { createService } = useServices();
+
   const toast = useToast();
 
   const formDefaultValues = {
@@ -58,10 +59,6 @@ export const AddService = ({ userLogged }) => {
   } = useForm<FormData>({
     defaultValues: formDefaultValues,
   });
-
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
 
   const serviceSelected = watch('serviceId');
 
@@ -240,11 +237,6 @@ export const AddService = ({ userLogged }) => {
           </Button>
         </Stack>
       </form>
-      {/* <Link href='/'>
-        <Text textAlign='center' fontSize='xl'>
-          <ChakraLink>Regresar al listado de servicios</ChakraLink>
-        </Text>
-      </Link> */}
     </VStack>
   );
 };

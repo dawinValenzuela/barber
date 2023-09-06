@@ -11,16 +11,23 @@ import { useGetUsersQuery } from 'src/store/users/slice';
 import { useUsers } from 'src/services/useUsers';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ userLogged }) => {
   const [user, setUser] = useState<string>('');
   const [today] = useState(new Date());
 
   const [dateSelected, setDateSelected] = useState(today.toLocaleDateString());
   const { data: users } = useGetUsersQuery(undefined);
-  const { userServices, getUserServices } = useUsers({
+  const { userServices, getUserServices, deleteUserService } = useUsers({
     userId: user,
     dateSelected,
   });
+
+  useEffect(() => {
+    if (userLogged.role === 'barber') {
+      setUser(userLogged.userId);
+      getUserServices({ userId: userLogged.userId, dateSelected });
+    }
+  }, [userLogged, getUserServices, dateSelected]);
 
   const handleUserChange = (userId: string) => {
     setUser(userId);
@@ -33,6 +40,7 @@ const Home: NextPage = () => {
   };
 
   const isArrowDisabled = !user;
+  const isAdmin = userLogged.role === 'owner' || userLogged.role === 'admin';
 
   return (
     <>
@@ -40,8 +48,9 @@ const Home: NextPage = () => {
       <ServiceList
         services={userServices?.data || []}
         isLoadingServices={userServices?.isLoading}
-        // getUserServices={getServices}
-        // role={role}
+        getUserServices={getUserServices}
+        deleteUserService={deleteUserService}
+        isAdmin={isAdmin}
         // user={userData}
         isArrowDisabled={isArrowDisabled}
         setUser={handleUserChange}
@@ -67,6 +76,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   return {
-    props: {},
+    props: {
+      userLogged: {
+        ...session?.userData,
+      },
+    },
   };
 }

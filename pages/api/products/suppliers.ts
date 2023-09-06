@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
 import { Supplier } from 'src/types/product';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import admin from '../../../firebase/admin';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -16,22 +16,18 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      const suppliers: Supplier[] = [];
+      const querySnapshot = await admin
+        .firestore()
+        .collection('suppliers')
+        .get();
 
-      const q = query(collection(db, 'suppliers'));
-
-      const querySnapshot = await getDocs(q);
-
-      querySnapshot.forEach((doc) => {
+      const suppliers = querySnapshot.docs.map((doc) => {
         const docData = doc.data();
 
-        const product = {
-          ...docData,
+        return {
           id: doc.id,
-          createdAt: docData.createdAt.toDate().toLocaleString(),
+          ...docData,
         } as Supplier;
-
-        suppliers.push(product);
       });
 
       res.status(200).json(suppliers);

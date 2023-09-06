@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
+import admin from '../../../firebase/admin';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -12,10 +12,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (req.method === 'GET') {
     const { userId, month } = req.query;
-
-    const allServices = [];
-
-    let dateString = '';
 
     // get default month if not provided
     const today = new Date();
@@ -28,24 +24,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     initialDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
 
-    const q = query(
-      collection(db, 'barber-services'),
-      where('createdAt', '>=', initialDate),
-      where('createdAt', '<=', endDate),
-      where('isDeleted', '==', false),
-      where('userId', '==', userId)
-    );
+    const querySnapshot = await admin
+      .firestore()
+      .collection('barber-services')
+      .where('createdAt', '>=', initialDate)
+      .where('createdAt', '<=', endDate)
+      .where('isDeleted', '==', false)
+      .where('userId', '==', userId)
+      .get();
 
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
+    const allServices = querySnapshot.docs.map((doc) => {
       const docData = doc.data();
 
-      const service = {
+      return {
         ...docData,
         id: doc.id,
       };
-
-      allServices.push(service);
     });
 
     res.status(200).json(allServices);

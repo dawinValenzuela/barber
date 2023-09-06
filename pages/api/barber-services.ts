@@ -1,31 +1,29 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import admin from '../../firebase/admin';
 import type { BarberService } from 'src/store/services/types';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
+
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   if (req.method === 'GET') {
-    const services: BarberService[] = [];
-    const querySnapshot = await getDocs(collection(db, 'services'));
+    const querySnapshot = await admin.firestore().collection('services').get();
 
-    querySnapshot.forEach((doc) => {
+    const services = querySnapshot.docs.map((doc) => {
       const docData = doc.data();
 
-      const service = {
+      return {
         id: doc.id,
         ...docData,
       } as BarberService;
-
-      services.push(service);
     });
 
     return res.status(200).json(services);

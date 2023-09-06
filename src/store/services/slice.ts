@@ -96,8 +96,7 @@ export const servicesApi = createApi({
       query: (month?: number) => `/api/services?month=${month}`,
     }),
     getResumeServices: builder.query({
-      query: (userId: string, month?: number) =>
-        `/api/resume/${userId}?month=${month}`,
+      query: ({ userId, month }) => `/api/resume/${userId}?month=${month}`,
     }),
   }),
 });
